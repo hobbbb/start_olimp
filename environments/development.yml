@@ -32,10 +32,10 @@ auto_reload: 0
 plugins:
     Database:
         driver: 'mysql'
-        database: 'bstroy'
+        database: ''
         host: 'localhost'
         port: 3306
-        username: 'root'
+        username: ''
         password: ''
         connection_check_threshold: 10
         dbi_params:

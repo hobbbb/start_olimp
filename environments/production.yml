@@ -18,10 +18,10 @@ route_cache: 1
 plugins:
     Database:
         driver: 'mysql'
-        database: 'bug_tracker'
+        database: 'start_olimp'
         host: 'localhost'
         port: 3306
-        username: 'bugs'
+        username: 'olimp'
         password: '4235440'
         connection_check_threshold: 10
         dbi_params:
@@ -29,5 +29,3 @@ plugins:
             AutoCommit: 1
         #on_connect_do: ["SET NAMES 'utf8'", "SET CHARACTER SET 'utf8'" ]
         log_queries: 1
-
-dump_path: '/mnt/bkp/bugs/'
