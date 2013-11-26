@@ -1,1 +1,7 @@
-body { padding-top: 60px; padding-bottom: 40px; }
+@charset "utf-8";
+
+/* ------------------------- */
+form .f_err { background-color: #ffd6d6; }
+.err { color: red; }
+.Requirement { font-weight: bold; color: red; }
+.dnone { display: none; }
