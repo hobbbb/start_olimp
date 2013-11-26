@@ -1,13 +1,17 @@
-package Entity;
+package Model;
 
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
-use Mouse;
 use Carp;
-use Data::Dumper;
+use Util;
+
+use Mouse;
 
 has id  => (is => 'ro', isa => 'Int');
 
+### Class methods
+
+=c
 sub list {
     my ($class, $cond) = @_;
     $cond ||= {};
@@ -22,6 +26,18 @@ sub get {
     my $o = database->quick_select($class->_tname, { id => $id }) || {};
     return $class->new($o);
 }
+=cut
+
+### Object methods
+
+sub insert {
+    my $self = shift;
+    croak 'No object' unless $self;
+
+    return database->quick_insert($self->_tname, { %$self }) ? $self : undef;
+}
+
+### Other methods
 
 sub _tname {
     my ($invocant) = @_;
