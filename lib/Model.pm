@@ -39,6 +39,13 @@ sub insert {
 
 ### Other methods
 
+# sub delete {
+#     my $self = shift;
+#     croak 'No object' unless $self;
+
+#     return database->quick_insert($self->_tname, { %$self }) ? $self : undef;
+# }
+
 sub _tname {
     my ($invocant) = @_;
     my $name = ref($invocant) || $invocant;

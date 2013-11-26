@@ -1,5 +1,6 @@
 package Model::User;
 
+use Carp;
 use Util;
 
 use Mouse;
@@ -32,7 +33,24 @@ sub create {
     my ($class, %params) = @_;
 
     my $self = $class->new(%params);
-    return $self->insert;
+    if ($self->validate) {
+        # return $self->insert;
+        w 'ok';
+    }
+    w 'nok';
+}
+
+### Object methods
+
+sub validate {
+    my $self = shift;
+    croak 'No object' unless $self;
+
+    if ($self->{email} !~ /@/) {
+        return;
+    }
+
+    return 1;
 }
 
 __PACKAGE__->meta->make_immutable();
