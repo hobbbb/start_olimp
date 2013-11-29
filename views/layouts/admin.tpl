@@ -9,6 +9,7 @@
 
     <!-- Le styles -->
     <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/navbar-fixed-top.css">
     <!--link rel="stylesheet" href="/css/smoothness/jquery-ui.css?v=2013_05_22_23_50" />
     <link rel="stylesheet" href="/css/admin.css?v=2013_09_17_10_00"-->
 
@@ -38,9 +39,9 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <!--li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li-->
-                    <li class="dropdown">
+                    <li><a href="/admin/users/">Пользователи</a></li>
+                    <!--li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Раздел <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#">Пункт 1</a></li>
