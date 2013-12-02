@@ -21,6 +21,14 @@ sub generate {
     return $str;
 }
 
+sub trim {
+    my $str = shift;
+    $str =~ s/\s+/ /g;
+    $str =~ s/^\s+//;
+    $str =~ s/\s+$//;
+    return $str;
+}
+
 =c
 sub generate_light {
     my $length = 10;
@@ -29,14 +37,6 @@ sub generate_light {
     for(my $i=0; $i<$length; $i++) {
         $str .= $table[int(rand(scalar(@table)))]
     }
-    return $str;
-}
-
-sub trim {
-    my $str = shift;
-    $str =~ s/\s+/ /g;
-    $str =~ s/^\s+//;
-    $str =~ s/\s+$//;
     return $str;
 }
 

@@ -17,7 +17,12 @@ sub list {
 
     my $list = [ database->quick_select($class->_tname, $cond) ];
 
-    return map { $class->new($_) } @$list;
+    if (scalar @$list == 1) {
+        return wantarray ? map { $class->new($_) } @$list : $class->new($list->[0]);
+    }
+    else {
+        return map { $class->new($_) } @$list;
+    }
 }
 
 sub get {
@@ -32,6 +37,7 @@ sub get {
 
 sub insert {
     my $self = shift;
+    return if vars->{fail};
 
     my $p = { %$self };
     database->quick_insert($self->_tname, $p) or return;
@@ -43,6 +49,7 @@ sub insert {
 sub update {
     my $self = shift;
     croak 'no id' unless $self->{id};
+    return if vars->{fail};
 
     my $p = { %$self };
     my $id = delete $p->{id};

@@ -11,22 +11,22 @@ extends 'Model';
 has fio => (
     is          => 'rw',
     isa         => 'Str',
-    required    => 1,
+    # required    => 1,
 );
 has email => (
     is          => 'rw',
     isa         => 'Str',
-    required    => 1,
+    # required    => 1,
 );
 has password => (
     is          => 'rw',
     isa         => 'Str',
-    required    => 1,
+    # required    => 1,
 );
 has sex => (
     is          => 'rw',
     isa         => 'Str',
-    required    => 1,
+    # required    => 1,
 );
 has regcode => (
     is          => 'ro',
@@ -44,18 +44,14 @@ sub create {
     my ($class, %params) = @_;
 
     my $self = $class->new(%params);
-    if ($self->validate) {
-        return $self->insert;
-        # w 'ok';
-    }
-    w 'nok';
+    return $self->insert;
 }
 
 sub login {
     my ($class, %params) = @_;
     return unless ($params{email} and $params{password});
 
-    my ($self) = $class->list({ email => $params{email}, password => $params{password} });
+    my $self = $class->list({ email => $params{email}, password => $params{password} });
     if ($self) {
         cookie code => $self->{regcode}, expires => '1 year';
         return $self;
@@ -63,7 +59,7 @@ sub login {
 
     return;
 }
-
+=c
 sub check_auth {
     my $class = shift;
 
@@ -96,19 +92,8 @@ sub check_auth {
 
     return $self;
 }
-
+=cut
 ### Object methods
-
-sub validate {
-    my $self = shift;
-
-    my $error;
-    if ($self->{email} !~ /@/) {
-        $error->{email} = 1;
-    }
-
-    return $error ? $error : 1;
-}
 
 sub last_visit {
     my $self = shift;
@@ -123,5 +108,43 @@ sub last_visit {
     return $self;
 }
 
+### Modificators
+
+before 'insert' => sub {
+    my $self = shift;
+
+    $self->validate;
+
+    my $fail = vars->{fail};
+    for (qw/fio email password sex/) {
+        $fail->{$_} = 1 unless $self->{$_};
+    }
+
+    unless ($fail->{email}) {
+        $self->{email} = Util::trim(lc $self->{email}) ;
+        $fail->{email} = 1 if $self->{email} !~ /^.+@.+\.[a-z]{2,4}$/;
+    }
+
+    unless ($fail->{email}) {
+        $fail->{fio} = 1 if length($self->{fio}) < 3;
+    }
+
+    unless ($fail->{password}) {
+        $fail->{password} = 1 if $self->{password} !~ /^.{6,50}$/;
+    }
+
+    # my $where = { email => $self->{email} };
+    # if ($regcode) {
+    #     $where->{regcode} = { 'ne' => $regcode };
+    # }
+
+    # $fail->{email} = $fail->{email_exist} = 1 if database->quick_select('users', $where);
+
+
+    # $err->{code} = 1 if $form->{code};
+    # delete $form->{code};
+
+    var fail => $fail;
+};
 
 __PACKAGE__->meta->make_immutable();

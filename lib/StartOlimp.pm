@@ -3,7 +3,7 @@ package StartOlimp;
 use Dancer ':syntax';
 use Util;
 
-use Model::User;
+# use Model::User;
 
 load_app 'Ctrl::Admin', prefix => '/admin';
 load_app 'Ctrl::Auth', prefix => '/auth';
@@ -16,10 +16,10 @@ hook before => sub {
         set layout => 'main.tpl';
     }
 
-    my $user = Model::User->check_auth;
-    if ($user) {
-        var loged => $user->as_vars;
-    }
+    # my $user = Model::User->check_auth;
+    # if ($user) {
+    #     var loged => $user->as_vars;
+    # }
 };
 
 any '/' => sub {

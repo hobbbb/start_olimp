@@ -26,11 +26,21 @@ post '/register/' => sub {
         teacher => 'Model::User::Teacher',
         parent  => 'Model::User::Parent',
     );
-    my $class = $user_classes{delete $params{role}};
+    my $role = delete $params{role};
+    my $class = $user_classes{$role};
 
     $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
     my $user = $class->create(%params);
+    if ($user) {
+        redirect 'http://'. request->host .'/';
+    }
+
+    my $p = {
+        role => $role,
+        form => \%params,
+    };
+    template 'auth.tpl', $p;
 };
 
 post '/login/' => sub {
