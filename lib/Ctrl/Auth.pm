@@ -13,32 +13,33 @@ get '/' => sub {
 get '/register/' => sub {
     my $p = {};
     $p->{role} = params->{role} || 'student';
-Record::User->count();
+
     template 'auth.tpl', $p;
 };
 
 post '/register/' => sub {
     my %params = params;
 
-    # die if $params{role} !~ /^student|teacher|parent$/;
+    die if $params{role} !~ /^student|teacher|parent$/;
 
-    # $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
+    $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
-    # my $user = Record::User->create(%params);
-    # if ($user) {
-    #     redirect 'http://'. request->host .'/';
-    # }
-
-    # my $p = {
-    #     role => $role,
-    #     form => \%params,
-    # };
-    # template 'auth.tpl', $p;
+    my $user = Record::User->create(%params);
+    if ($user) {
+        redirect 'http://'. request->host .'/';
+    }
+    else {
+        my $p = {
+            role => $params{role},
+            form => \%params,
+        };
+        template 'auth.tpl', $p;
+    }
 };
 
 post '/login/' => sub {
     my %params = params;
-    # Record::User->login(%params);
+    Record::User->login(%params);
     return redirect 'http://'. request->host .'/';
 };
 

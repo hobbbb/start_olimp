@@ -41,7 +41,7 @@ has registered => (
 );
 has class_number => (
     is          => 'rw',
-    isa         => 'Int',
+    isa         => 'Str',
     # required    => 1,
 );
 has x_real_ip   => (is => 'ro', isa => 'Any');
@@ -121,7 +121,7 @@ sub last_visit {
 before 'insert' => sub {
     my $self = shift;
 
-    $self->validate;
+    # $self->validate;
 
     my $fail = vars->{fail};
     for (qw/fio email password sex/) {

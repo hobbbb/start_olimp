@@ -29,9 +29,7 @@ sub count {
     my ($class, $cond) = @_;
     $cond ||= {};
 
-    my $cnt = database->quick_count($class->_tname, $cond);
-w $cnt;
-    return $cnt;
+    return database->quick_count($class->_tname, $cond);
 }
 
 sub get {
