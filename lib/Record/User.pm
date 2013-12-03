@@ -1,4 +1,4 @@
-package Model::User;
+package Record::User;
 
 use Dancer ':syntax';
 use Carp;
@@ -6,7 +6,7 @@ use Util;
 
 use Mouse;
 
-extends 'Model';
+extends 'Record';
 
 has fio => (
     is          => 'rw',
@@ -34,12 +34,20 @@ has regcode => (
     default     => Util::generate,
     required    => 1,
 );
-has registered  => (is => 'ro', isa => 'Str');
+has registered => (
+    is          => 'ro',
+    isa         => 'Str',
+    default     => Util::now,
+);
+has class_number => (
+    is          => 'rw',
+    isa         => 'Int',
+    # required    => 1,
+);
 has x_real_ip   => (is => 'ro', isa => 'Any');
-has last_visit  => (is => 'ro', isa => 'Any');
+has last_visit  => (is => 'rw', isa => 'Any');
 
 ### Class methods
-
 sub create {
     my ($class, %params) = @_;
 
@@ -53,20 +61,20 @@ sub login {
 
     my $self = $class->list({ email => $params{email}, password => $params{password} });
     if ($self) {
-        cookie code => $self->{regcode}, expires => '1 year';
+        cookie code => $self->regcode, expires => '1 year';
         return $self;
     }
 
     return;
 }
-=c
+
 sub check_auth {
     my $class = shift;
 
     my $regcode = cookie 'code';
     my $self;
     if ($regcode) {
-        ($self) = $class->list({ regcode => $regcode });
+        $self = $class->list({ regcode => $regcode });
         unless ($self) {
             cookie code => '', expires => '0';
             return;
@@ -92,7 +100,7 @@ sub check_auth {
 
     return $self;
 }
-=cut
+
 ### Object methods
 
 sub last_visit {
@@ -100,7 +108,7 @@ sub last_visit {
 
     my $regcode = cookie 'code';
     if ($regcode) {
-        # $self->{last_visit} = '2013-01-01';
+        # $self->last_visit('2013-01-01');
         # $self->update;
         # database->quick_update('users', { regcode => $regcode }, { last_visit => func::now() });
     }
@@ -117,29 +125,45 @@ before 'insert' => sub {
 
     my $fail = vars->{fail};
     for (qw/fio email password sex/) {
-        $fail->{$_} = 1 unless $self->{$_};
+        $fail->{$_} = 1 unless $self->$_;
     }
 
     unless ($fail->{email}) {
-        $self->{email} = Util::trim(lc $self->{email}) ;
-        $fail->{email} = 1 if $self->{email} !~ /^.+@.+\.[a-z]{2,4}$/;
+        $self->email(Util::trim(lc $self->{email}));
+        $fail->{email} = 1 if $self->email !~ /^.+@.+\.[a-z]{2,4}$/;
+=c
+        for my $class (USER_CLASSES) {
+            # my $where = { email => $self->email };
+            # if ($regcode) {
+            #     $where->{regcode} = { 'ne' => $regcode };
+            # }
+            my @list = $class->list({ email => $self->email });
+            if (@list) {
+                $fail->{email} = $fail->{email_exist} = 1;
+                last;
+            }
+        }
+=cut
     }
 
-    unless ($fail->{email}) {
-        $fail->{fio} = 1 if length($self->{fio}) < 3;
+    # my $fail = vars->{fail};
+    # for (qw/class_number/) {
+    #     $fail->{$_} = 1 unless $self->{$_};
+    # }
+
+    # unless ($fail->{class_number}) {
+    #     $fail->{class_number} = 1 if $self->{class_number} !~ /^\d+$/ or $self->{class_number} < 1 or $self->{class_number} > 11;
+    # }
+
+    # var fail => $fail;
+
+    unless ($fail->{fio}) {
+        $fail->{fio} = 1 if length($self->fio) < 3;
     }
 
     unless ($fail->{password}) {
-        $fail->{password} = 1 if $self->{password} !~ /^.{6,50}$/;
+        $fail->{password} = 1 if $self->password !~ /^.{6,50}$/;
     }
-
-    # my $where = { email => $self->{email} };
-    # if ($regcode) {
-    #     $where->{regcode} = { 'ne' => $regcode };
-    # }
-
-    # $fail->{email} = $fail->{email_exist} = 1 if database->quick_select('users', $where);
-
 
     # $err->{code} = 1 if $form->{code};
     # delete $form->{code};

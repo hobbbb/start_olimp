@@ -3,7 +3,7 @@ package Ctrl::Auth;
 use Dancer ':syntax';
 use Util;
 
-use Model::User::Student;
+use Record::User;
 
 get '/' => sub {
     my $p = {};
@@ -13,39 +13,32 @@ get '/' => sub {
 get '/register/' => sub {
     my $p = {};
     $p->{role} = params->{role} || 'student';
+Record::User->count();
     template 'auth.tpl', $p;
 };
 
 post '/register/' => sub {
     my %params = params;
 
-    die if $params{role} !~ /^student|teacher|parent$/;
+    # die if $params{role} !~ /^student|teacher|parent$/;
 
-    my %user_classes = (
-        student => 'Model::User::Student',
-        teacher => 'Model::User::Teacher',
-        parent  => 'Model::User::Parent',
-    );
-    my $role = delete $params{role};
-    my $class = $user_classes{$role};
+    # $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
-    $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
+    # my $user = Record::User->create(%params);
+    # if ($user) {
+    #     redirect 'http://'. request->host .'/';
+    # }
 
-    my $user = $class->create(%params);
-    if ($user) {
-        redirect 'http://'. request->host .'/';
-    }
-
-    my $p = {
-        role => $role,
-        form => \%params,
-    };
-    template 'auth.tpl', $p;
+    # my $p = {
+    #     role => $role,
+    #     form => \%params,
+    # };
+    # template 'auth.tpl', $p;
 };
 
 post '/login/' => sub {
     my %params = params;
-    Model::User->login(%params);
+    # Record::User->login(%params);
     return redirect 'http://'. request->host .'/';
 };
 

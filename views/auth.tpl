@@ -24,6 +24,7 @@
             <div class="form-group [% 'has-error' IF vars.fail.email %]">
                 <label for="email" class="col-sm-2 control-label">Email</label>
                 <div class="col-sm-10"><input type="email" class="form-control" id="email" placeholder="Email" name="email" value="[% form.email %]"></div>
+                [% '<span class="err">Такой E-mail уже существует</span>' IF vars.fail.email_exist %]
             </div>
             <div class="form-group [% 'has-error' IF vars.fail.password %]">
                 <label for="password" class="col-sm-2 control-label">Пароль</label>

@@ -1,4 +1,4 @@
-package Model;
+package Record;
 
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
@@ -23,6 +23,15 @@ sub list {
     else {
         return map { $class->new($_) } @$list;
     }
+}
+
+sub count {
+    my ($class, $cond) = @_;
+    $cond ||= {};
+
+    my $cnt = database->quick_count($class->_tname, $cond);
+w $cnt;
+    return $cnt;
 }
 
 sub get {
@@ -77,7 +86,7 @@ sub as_vars {
 sub _tname {
     my ($invocant) = @_;
     my $name = ref($invocant) || $invocant;
-    $name =~ s/^Model:://;
+    $name =~ s/^Record:://;
     $name =~ s/::/_/g;
     return $name;
 }

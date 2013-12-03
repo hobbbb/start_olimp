@@ -29,6 +29,15 @@ sub trim {
     return $str;
 }
 
+sub now {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+
+    $year += 1900;
+    $mon += 1;
+
+    return "$year-$mon-$mday $hour:$min:$sec";
+}
+
 =c
 sub generate_light {
     my $length = 10;
