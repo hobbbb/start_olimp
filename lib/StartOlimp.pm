@@ -9,17 +9,19 @@ use Record::User;
 load_app 'Ctrl::Auth', prefix => '/auth';
 
 hook before => sub {
-    if (request->path_info =~ m!^/admin!) {
-        set layout => 'admin.tpl';
-    }
-    else {
-        set layout => 'main.tpl';
-    }
-
-    my $user = Record::User->check_auth;
+    my $user = Record::User->check_auth(cookie 'code');
     if ($user) {
         var loged => $user->as_vars;
     }
+    else {
+        cookie code => '', expires => '0';
+    }
+};
+
+hook before_template_render => sub {
+    my $tokens = shift;
+
+    $tokens->{fail} = delete $tokens->{vars}->{fail};
 };
 
 any '/' => sub {

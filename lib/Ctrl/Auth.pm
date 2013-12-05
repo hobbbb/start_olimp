@@ -24,7 +24,7 @@ post '/register/' => sub {
 
     $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
-    my $user = Record::User->create(%params);
+    my $user = Record::User->add(%params);
     if ($user) {
         redirect 'http://'. request->host .'/';
     }
@@ -38,8 +38,12 @@ post '/register/' => sub {
 };
 
 post '/login/' => sub {
-    my %params = params;
-    Record::User->login(%params);
+    if (params->{email} and params->{password}) {
+        my $user = Record::User->list({ email => params->{email}, password => params->{password} });
+        if ($user) {
+            cookie code => $user->regcode, expires => '1 year';
+        }
+    }
     return redirect 'http://'. request->host .'/';
 };
 

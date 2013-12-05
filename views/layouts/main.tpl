@@ -10,14 +10,14 @@
     <!-- Le styles -->
     <link rel="stylesheet" href="/css/bootstrap.css">
     <link rel="stylesheet" href="/css/navbar-fixed-top.css">
-    <!--link rel="stylesheet" href="/css/smoothness/jquery-ui.css?v=2013_05_22_23_50" />
-    <link rel="stylesheet" href="/css/admin.css?v=2013_09_17_10_00"-->
+    <!--link rel="stylesheet" href="/css/smoothness/jquery-ui.css?v=2013_05_22_23_50" /-->
+    <link rel="stylesheet" href="/css/main.css?v=2013_09_17_10_00">
 
     <script type="text/javascript" src="/javascripts/jquery.js?v=2013_08_30_13_20"></script>
     <script type="text/javascript" src="/javascripts/jquery-migrate-1.2.1.js"></script>
     <script type="text/javascript" src="/javascripts/bootstrap.js"></script>
 
-    <link rel="shortcut icon" href="[% request.uri_base %]/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
 </head>
 
 <body>
@@ -52,11 +52,12 @@
                     </ul>
                 </li-->
             </ul>
-            [% IF vars.loged %]
+            : if $vars.loged {
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/auth/logout/">Выйти</a></li>
                 </ul>
-            [% ELSE %]
+            : }
+            : else {
                 <form class="navbar-form navbar-right" method="post" action="/auth/login/">
                     <div class="form-group">
                         <input type="text" name="email" placeholder="Email" class="form-control">
@@ -66,13 +67,15 @@
                     </div>
                     <button type="submit" class="btn btn-success">Войти</button>
                 </form>
-            [% END %]
+            : }
         </div><!--/.navbar-collapse -->
     </div>
 
     <!-- Main component for a primary marketing message or call to action -->
     <div class="row">
-        [% content %]
+        : block content -> {
+            <!-- page content should be here -->
+        : }
     </div>
 
 </div> <!-- /container -->

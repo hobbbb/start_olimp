@@ -7,7 +7,7 @@ appname: "StartOlimp"
 
 # The default layout to use for your application (located in
 # views/layouts/main.tt)
-layout: "main.tpl"
+# layout: "main.tpl"
 
 # when the charset is set to UTF-8 Dancer will handle for you
 # all the magic of encoding and decoding. You should not care
@@ -22,11 +22,20 @@ charset: "UTF-8"
 
 # session: "Simple"
 
-template: "template_toolkit"
+# template: "template_toolkit"
+# engines:
+#   template_toolkit:
+#     start_tag: '[%'
+#     end_tag:   '%]'
+
+template: xslate
 engines:
-  template_toolkit:
-    start_tag: '[%'
-    end_tag:   '%]'
+    xslate:
+        # cache_dir: .xslate_cache/
+        # cache:     1
+        extension: tpl
+        # module:
+        #   - Text::Xslate::Bridge::TT2Like # to keep partial compatibility with Template Toolkit
 
 plugins:
     Ajax:
