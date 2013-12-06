@@ -10,7 +10,6 @@
     <!-- Le styles -->
     <link rel="stylesheet" href="/css/bootstrap.css">
     <link rel="stylesheet" href="/css/navbar-fixed-top.css">
-    <!--link rel="stylesheet" href="/css/smoothness/jquery-ui.css?v=2013_05_22_23_50" /-->
     <link rel="stylesheet" href="/css/main.css?v=2013_09_17_10_00">
 
     <script type="text/javascript" src="/javascripts/jquery.js?v=2013_08_30_13_20"></script>
@@ -36,21 +35,21 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/auth/register">Регистрация</a></li>
-                <!--li class="active"><a href="#">Link</a></li>
-                <li><a href="#">Link</a></li>
+            : if $vars.loged {
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Меню <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
+                        <li><a href="/user/profile">Профиль</a></li>
+                        <!--li class="divider"></li>
                         <li class="dropdown-header">Nav header</li>
                         <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
+                        <li><a href="#">One more separated link</a></li-->
                     </ul>
                 </li-->
+            : }
+            : else {
+                <li><a href="/auth/register">Регистрация</a></li>
+            : }
             </ul>
             : if $vars.loged {
                 <ul class="nav navbar-nav navbar-right">

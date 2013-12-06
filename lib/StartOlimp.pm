@@ -7,6 +7,7 @@ use Record::User;
 
 # load_app 'Ctrl::Admin', prefix => '/admin';
 load_app 'Ctrl::Auth', prefix => '/auth';
+load_app 'Ctrl::User';
 
 hook before => sub {
     my $user = Record::User->check_auth(cookie 'code');
@@ -26,7 +27,7 @@ hook before_template_render => sub {
 
 any '/' => sub {
     my $p = {};
-    return template 'index.tpl', $p;
+    return template 'index', $p;
 };
 
 true;

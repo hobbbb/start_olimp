@@ -1,10 +1,11 @@
 package Record::User;
 
-use Util;
-use Errors;
-
 use Mouse;
 use Mouse::Util::TypeConstraints;
+use Digest::MD5 qw(md5_hex);
+
+use Util;
+use Errors;
 
 extends 'Record';
 
@@ -35,11 +36,11 @@ has sex => (
 );
 has class_number => (
     is          => 'rw',
-    isa         => 'Str',
+    isa         => 'Maybe[Int]',
 );
 has school_number => (
     is          => 'rw',
-    isa         => 'Str',
+    isa         => 'Maybe[Int]',
 );
 has regcode => (
     is          => 'ro',
@@ -63,8 +64,19 @@ sub add {
 
     my $self;
     if ($class->validate(\%params)) {
+        $params{password} = $class->password_crypt($params{password});
         $self = $class->new(%params);
         $self->insert;
+    }
+    return $self;
+}
+
+sub change {
+    my ($self, %params) = @_;
+
+    if (ref($self)->validate(\%params)) {
+        # $self = $class->new(%params);
+        # $self->insert;
     }
     return $self;
 }
@@ -90,7 +102,8 @@ sub check_auth {
     #     }
     # }
 
-    # $self->last_visit(Util::now);
+    $self->last_visit(Util::now);
+    $self->update;
 
     return $self;
 }
@@ -106,12 +119,11 @@ sub validate {
         fail 'role';
     }
 
-    unless (fail 'fio') {
+    unless (failed 'fio') {
         fail 'fio' if length($params->{fio}) < 3;
     }
 
-    unless (fail 'email') {
-        # $params->{email} = Util::trim(lc $self->{email});
+    unless (failed 'email') {
         fail 'email' if $params->{email} !~ /^.+@.+\.[a-z]{2,4}$/;
 
         # my $where = { email => $self->email };
@@ -125,7 +137,7 @@ sub validate {
         }
     }
 
-    unless (fail 'password') {
+    unless (failed 'password') {
         fail 'password' if $params->{password} !~ /^.{6,50}$/;
     }
 
@@ -138,7 +150,14 @@ sub validate {
 
     # fail 'code' if $params->{code};
 
-    return fail() ? 0 : 1;
+    return failed() ? 0 : 1;
 }
+
+sub password_crypt {
+    my ($class, $password) = @_;
+
+    my $salt = '1b2r9';
+    return $salt . md5_hex($salt . $password);
+};
 
 __PACKAGE__->meta->make_immutable();

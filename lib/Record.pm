@@ -1,12 +1,16 @@
 package Record;
 
+use Mouse;
+
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
 use Util;
 
-use Mouse;
-
-has id  => (is => 'ro', isa => 'Int');
+has id => (
+    is      => 'ro',
+    isa     => 'Int',
+    clearer => 'clear_id',
+);
 
 ### Class methods
 
@@ -43,6 +47,7 @@ sub count {
 
 sub insert {
     my $self = shift;
+    $self->clear_id;
 
     my $p = { %$self };
     database->quick_insert($self->TABLE, $p) or return;

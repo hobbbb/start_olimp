@@ -3,6 +3,9 @@ package Util;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(&w);
 
+use MIME::Lite;
+use MIME::Base64;
+use Encode qw/encode/;
 use Data::Dumper;
 
 sub w {
@@ -12,20 +15,14 @@ sub w {
 }
 
 sub generate {
-    my $length = $_[0] || 50;
-    my @table = ('A'..'Z','1'..'9','a'..'z','!','@','#','$','%','^','&','*','(',')');
+    my %params = @_;
+    $params{length} ||= 50;
+
+    my @table = $params{light} ? ('A'..'Z','1'..'9','a'..'z') : ('A'..'Z','1'..'9','a'..'z','!','@','#','$','%','^','&','*','(',')');
     my $str = '';
-    for(my $i=0; $i<$length; $i++) {
+    for(my $i=0; $i < $params{length}; $i++) {
         $str .= $table[int(rand(scalar(@table)))]
     }
-    return $str;
-}
-
-sub trim {
-    my $str = shift;
-    $str =~ s/\s+/ /g;
-    $str =~ s/^\s+//;
-    $str =~ s/\s+$//;
     return $str;
 }
 
@@ -38,14 +35,45 @@ sub now {
     return "$year-$mon-$mday $hour:$min:$sec";
 }
 
-=c
-sub generate_light {
-    my $length = 10;
-    my @table = ('A'..'Z','1'..'9','a'..'z');
-    my $str = '';
-    for(my $i=0; $i<$length; $i++) {
-        $str .= $table[int(rand(scalar(@table)))]
+sub email {
+    my %params = @_;
+
+    # $params{to} = 'p.vasilyev@corp.mail.ru, vvd@programmex.ru' if config->{environment} ne 'production';
+
+    utf8::encode($params{body});
+    $params{$_} = encode('MIME-Header', $params{$_}) for qw(to from subject);
+
+    my $msg = MIME::Lite->new(
+        From    => $params{from} || 'info',
+        To      => $params{to},
+        Subject => $params{subject},
+        Type    => 'multipart/mixed',
+    );
+    $msg->attach(
+        Type    => 'text/html; charset=UTF-8',
+        Data    => $params{body},
+    );
+
+    for (@{$params{attachment}}) {
+        utf8::encode($_->{Filename});
+        $msg->attach(%{$_});
     }
+
+    $msg->send;
+
+    if ($params{attachment_delete}) {
+        for (@{$params{attachment}}) {
+            unlink $_->{Path} if -f $_->{Path};
+        }
+    }
+}
+
+=c
+sub trim {
+    my $str = shift;
+    $str =~ s/\s+/ /g;
+    $str =~ s/^\s+//;
+    $str =~ s/\s+$//;
     return $str;
 }
 
