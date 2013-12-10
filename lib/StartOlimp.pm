@@ -5,7 +5,7 @@ use Util;
 
 use Record::User;
 
-# load_app 'Ctrl::Admin', prefix => '/admin';
+load_app 'Ctrl::Admin', prefix => '/admin';
 load_app 'Ctrl::Auth', prefix => '/auth';
 load_app 'Ctrl::User';
 
@@ -22,6 +22,7 @@ hook before => sub {
 hook before_template_render => sub {
     my $tokens = shift;
 
+    $tokens->{LOGED} = delete $tokens->{vars}->{loged};
     $tokens->{fail} = delete $tokens->{vars}->{fail};
 };
 

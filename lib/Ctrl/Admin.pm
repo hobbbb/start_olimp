@@ -2,31 +2,31 @@ package Ctrl::Admin;
 
 use Dancer ':syntax';
 use Util;
-# use Dancer::Plugin::Ajax;
 
-use Model::User;
+use Record::User;
 
 get '/' => sub {
-    template 'admin/index.tpl';
+    return template 'admin/index';
 };
 
 prefix '/users' => sub {
     get '/' => sub {
         my $p = {};
+        $p->{role} = params->{role} || 'student';
 
-# my $self = Model::User->create(email => 'test', password => 'test');
-# my $self = Model::User->get({ email => 'test' });
-# $self->delete;
-# w $self->as_vars;
-
-        $p->{list} = [ map { $_->as_vars } Model::User->list ];
-        template 'admin/users.tpl', $p;
+        $p->{list} = [ map { $_->as_vars } Record::User->list({ role => $p->{role} }) ];
+        return template 'admin/users', $p;
     };
 
-    any '/:id/' => sub {
+    get '/:id/' => sub {
         my $p = {};
-        $p->{user} = Model::User->get(params->{id})->as_vars;
-        template 'admin/users.tpl', $p;
+
+        my $user = Record::User->take(params->{id});
+        if ($user) {
+            $p->{form} = $user->as_vars;
+        }
+
+        return template 'admin/users', $p;
     };
 };
 

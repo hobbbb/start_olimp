@@ -74,9 +74,13 @@ sub add {
 sub change {
     my ($self, %params) = @_;
 
-    if (ref($self)->validate(\%params)) {
-        # $self = $class->new(%params);
-        # $self->insert;
+    my $class = ref($self);
+    if ($class->validate(\%params, { skip_empty => 1 })) {
+        for my $k (keys %params) {
+            next unless grep(/^$k$/, $class->meta->get_attribute_list);
+            $self->$k($params{$k});
+        }
+        $self->update;
     }
     return $self;
 }
@@ -109,21 +113,24 @@ sub check_auth {
 }
 
 sub validate {
-    my ($class, $params) = @_;
+    my ($class, $params, $opt) = @_;
+    $opt ||= {};
 
-    for (qw/role fio email password sex/) {
-        fail $_ unless $params->{$_};
+    unless ($opt->{skip_empty}) {
+        for (qw/role fio email password sex/) {
+            fail $_ unless $params->{$_};
+        }
     }
 
-    unless (grep(/^$params->{role}$/, qw/student teacher parent/)) {
+    if (!$opt->{skip_empty} and !grep(/^$params->{role}$/, qw/student teacher parent/)) {
         fail 'role';
     }
 
-    unless (failed 'fio') {
+    if (!$opt->{skip_empty} and $params->{fio}) {
         fail 'fio' if length($params->{fio}) < 3;
     }
 
-    unless (failed 'email') {
+    if (!$opt->{skip_empty} and $params->{email}) {
         fail 'email' if $params->{email} !~ /^.+@.+\.[a-z]{2,4}$/;
 
         # my $where = { email => $self->email };
@@ -137,7 +144,7 @@ sub validate {
         }
     }
 
-    unless (failed 'password') {
+    if (!$opt->{skip_empty} and $params->{password}) {
         fail 'password' if $params->{password} !~ /^.{6,50}$/;
     }
 

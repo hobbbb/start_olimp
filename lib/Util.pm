@@ -1,7 +1,7 @@
 package Util;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(&w);
+our @EXPORT = qw(&w &send_email);
 
 use MIME::Lite;
 use MIME::Base64;
@@ -35,7 +35,7 @@ sub now {
     return "$year-$mon-$mday $hour:$min:$sec";
 }
 
-sub email {
+sub send_email {
     my %params = @_;
 
     # $params{to} = 'p.vasilyev@corp.mail.ru, vvd@programmex.ru' if config->{environment} ne 'production';

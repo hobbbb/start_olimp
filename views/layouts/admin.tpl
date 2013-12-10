@@ -17,10 +17,10 @@
     <script type="text/javascript" src="/javascripts/jquery-migrate-1.2.1.js"></script>
     <script type="text/javascript" src="/javascripts/jquery-ui.js?v=2013_05_22_23_50"></script>
     <script type="text/javascript" src="/javascripts/bootstrap.js"></script>
-    <!--script type="text/javascript" src="/javascripts/admin.js?v=2013_10_28_13_50"></script-->
+    <script type="text/javascript" src="/javascripts/admin.js?v=2013_12_10_10_50"></script>
     <script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
 
-    <link rel="shortcut icon" href="[% request.uri_base %]/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
 </head>
 
 <body>
@@ -61,7 +61,9 @@
     </div>
 
     <div class="container">
-        [% content %]
+        : block content -> {
+            <!-- page content should be here -->
+        : }
     </div> <!-- /container -->
 </body>
 </html>

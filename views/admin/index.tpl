@@ -1,2 +1,6 @@
-<div class="span12">
-</div>
+: cascade layouts::admin
+: around content -> {
+
+    Админка
+
+: }

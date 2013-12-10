@@ -14,14 +14,6 @@ has id => (
 
 ### Class methods
 
-sub take {
-    my ($class, $id) = @_;
-
-    my $row = database->quick_select($class->TABLE, { id => $id }) or return;
-
-    return $class->new($row);
-}
-
 sub list {
     my ($class, $cond) = @_;
     $cond ||= {};
@@ -34,6 +26,11 @@ sub list {
     else {
         return map { $class->new($_) } @$list;
     }
+}
+
+sub take {
+    my ($class, $id) = @_;
+    return $class->list({ id => $id });
 }
 
 sub count {
@@ -67,8 +64,6 @@ sub update {
     return $self;
 }
 
-### Other methods
-
 sub delete {
     my $self = shift;
     confess('no id') unless $self->{id};
@@ -77,6 +72,8 @@ sub delete {
 
     return 1;
 }
+
+### Other methods
 
 sub as_vars {
     my $self = shift;

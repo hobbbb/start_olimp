@@ -35,7 +35,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-            : if $vars.loged {
+            : if $LOGED {
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Меню <b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -51,8 +51,11 @@
                 <li><a href="/auth/register">Регистрация</a></li>
             : }
             </ul>
-            : if $vars.loged {
+            : if $LOGED {
                 <ul class="nav navbar-nav navbar-right">
+                    : if $LOGED.role == 'admin' {
+                        <li><a href="/admin/">Админка</a></li>
+                    : }
                     <li><a href="/auth/logout/">Выйти</a></li>
                 </ul>
             : }

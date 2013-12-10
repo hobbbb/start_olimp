@@ -64,12 +64,12 @@ post '/restore/' => sub {
         my $user = Record::User->list({ email => params->{email} });
         if ($user) {
             my $new_password = Util::generate(length => 8, light => 1);
-            Util::email(
+            send_email(
                 to      => $user->{email},
                 subject => 'Восстановление пароля',
                 body    => $new_password,
             );
-            $user->update(password => Record::User->password_crypt($new_password));
+            $user->change(password => Record::User->password_crypt($new_password));
         }
     }
 
