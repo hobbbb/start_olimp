@@ -2,6 +2,7 @@ package Record::User;
 
 use Mouse;
 use Mouse::Util::TypeConstraints;
+use MouseX::NativeTraits;
 use Digest::MD5 qw(md5_hex);
 
 use Util;
@@ -27,6 +28,7 @@ has email => (
 has password => (
     is          => 'rw',
     isa         => 'Str',
+    writer      => 'set_password',
     required    => 1,
 );
 has sex => (
@@ -57,6 +59,14 @@ has registered => (
 has x_real_ip   => (is => 'ro', isa => 'Any');
 has last_visit  => (is => 'rw', isa => 'Any');
 
+sub set_password {
+    my $self = shift;
+    w $self;
+    # my @p = @_;
+    # die 'set_password';
+    # w \@p;
+    # return '123';
+}
 ### Class methods
 
 sub add {
@@ -73,7 +83,8 @@ sub add {
 
 sub change {
     my ($self, %params) = @_;
-
+$self->set_password('1');
+w $self;
     my $class = ref($self);
     if ($class->validate(\%params, { skip_empty => 1 })) {
         for my $k (keys %params) {
@@ -89,27 +100,8 @@ sub check_auth {
     my ($class, $regcode) = @_;
     return unless $regcode;
 
-    my $self = $class->list({ regcode => $regcode });
-
-    # my @roles = qw/admin manager content driver/;
-    # if ($user->{role}) {
-    #     if ($user->{role} eq 'admin') {
-    #         map { $user->{acs}->{$_} = 1 } @roles;
-    #     }
-    #     else {
-    #         for my $r (@roles) {
-    #             if ($user->{role} eq $r) {
-    #                 $user->{acs}->{$r} = 1;
-    #                 $user->{acs}->{"$r\_only"} = 1;
-    #             }
-    #         }
-    #     }
-    # }
-
-    $self->last_visit(Util::now);
-    $self->update;
-
-    return $self;
+    my $self = $class->list({ regcode => $regcode }) or return;
+    return $self->change(last_visit => Util::now);
 }
 
 sub validate {
@@ -132,11 +124,6 @@ sub validate {
 
     if (!$opt->{skip_empty} and $params->{email}) {
         fail 'email' if $params->{email} !~ /^.+@.+\.[a-z]{2,4}$/;
-
-        # my $where = { email => $self->email };
-        # if ($regcode) {
-        #     $where->{regcode} = { 'ne' => $regcode };
-        # }
         my @list = $class->list({ email => $params->{email} });
         if (@list) {
             fail 'email';

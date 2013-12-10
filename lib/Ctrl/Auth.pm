@@ -21,22 +21,24 @@ get '/register/' => sub {
 post '/register/' => sub {
     my %params = params;
 
-    die if $params{role} !~ /^student|teacher|parent$/;
+    if ($params{role} =~ /^student|teacher|parent$/) {
+        $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
-    $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
-
-    my $user = Record::User->add(%params);
-    if ($user) {
-        cookie code => $user->regcode, expires => '1 year';
-        return redirect '/';
+        my $user = Record::User->add(%params);
+        if ($user) {
+            cookie code => $user->regcode, expires => '1 year';
+            return redirect '/';
+        }
     }
     else {
-        my $p = {
-            role => $params{role},
-            form => \%params,
-        };
-        return template 'auth', $p;
+        $params{role} = 'student';
     }
+
+    my $p = {
+        role => $params{role},
+        form => \%params,
+    };
+    return template 'auth', $p;
 };
 
 get '/logout/' => sub {
@@ -64,12 +66,13 @@ post '/restore/' => sub {
         my $user = Record::User->list({ email => params->{email} });
         if ($user) {
             my $new_password = Util::generate(length => 8, light => 1);
-            send_email(
-                to      => $user->{email},
-                subject => 'Восстановление пароля',
-                body    => $new_password,
-            );
-            $user->change(password => Record::User->password_crypt($new_password));
+            # send_email(
+            #     to      => $user->{email},
+            #     subject => 'Восстановление пароля',
+            #     body    => $new_password,
+            # );
+            # $user->change(password => Record::User->password_crypt($new_password));
+            $user->change(password => $new_password);
         }
     }
 
