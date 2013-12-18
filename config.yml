@@ -1,7 +1,3 @@
-# This is the main configuration file of your Dancer app
-# env-related settings should go to environments/$env.yml
-# all the settings in this file will be loaded at Dancer's startup.
-
 # Your application's name
 appname: "StartOlimp"
 
@@ -28,14 +24,19 @@ charset: "UTF-8"
 #     start_tag: '[%'
 #     end_tag:   '%]'
 
-template: xslate
+template: Xslate
 engines:
-    xslate:
-        # cache_dir: .xslate_cache/
-        # cache:     1
-        extension: tpl
-        # module:
-        #   - Text::Xslate::Bridge::TT2Like # to keep partial compatibility with Template Toolkit
+  template:
+    Xslate: { path: "views" }
+
+# template: xslate
+# engines:
+#     xslate:
+#         # cache_dir: .xslate_cache/
+#         # cache:     1
+#         extension: tpl
+#         # module:
+#         #   - Text::Xslate::Bridge::TT2Like # to keep partial compatibility with Template Toolkit
 
 plugins:
     Ajax:

@@ -1,4 +1,7 @@
 #!/usr/bin/env perl
-use Dancer;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
 use StartOlimp;
-dance;
+StartOlimp->dance;
