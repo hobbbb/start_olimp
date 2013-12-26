@@ -20,7 +20,7 @@
     <script type="text/javascript" src="/javascripts/admin.js?v=2013_12_10_10_50"></script>
     <script type="text/javascript" src="/ckeditor/ckeditor.js"></script>
 
-    <link rel="shortcut icon" href="/favicon.ico">
+    <!--link rel="shortcut icon" href="/favicon.ico"-->
 </head>
 
 <body>
