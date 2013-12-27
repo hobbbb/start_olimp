@@ -88,4 +88,15 @@ sub TABLE {
     return $name;
 }
 
+sub clear_params {
+    my ($class, $params) = @_;
+
+    for my $k (keys %$params) {
+        unless (grep(/^$k$/, $class->meta->get_attribute_list)) {
+            delete $params->{$k};
+        }
+    }
+    return [ keys %$params ];
+}
+
 __PACKAGE__->meta->make_immutable();

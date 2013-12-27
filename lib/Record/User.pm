@@ -28,7 +28,7 @@ has email => (
 has password => (
     is          => 'rw',
     isa         => 'Str',
-    writer      => 'set_password',
+    # writer      => 'set_password',
     required    => 1,
 );
 has sex => (
@@ -59,6 +59,7 @@ has registered => (
 has x_real_ip   => (is => 'ro', isa => 'Any');
 has last_visit  => (is => 'rw', isa => 'Any');
 
+=c
 sub set_password {
     my $self = shift;
     w $self;
@@ -67,6 +68,8 @@ sub set_password {
     # w \@p;
     # return '123';
 }
+=cut
+
 ### Class methods
 
 sub add {
@@ -83,12 +86,10 @@ sub add {
 
 sub change {
     my ($self, %params) = @_;
-$self->set_password('1');
-w $self;
+
     my $class = ref($self);
     if ($class->validate(\%params, { skip_empty => 1 })) {
-        for my $k (keys %params) {
-            next unless grep(/^$k$/, $class->meta->get_attribute_list);
+        for my $k ($class->clear_params(\%params)) {
             $self->$k($params{$k});
         }
         $self->update;
@@ -153,5 +154,11 @@ sub password_crypt {
     my $salt = '1b2r9';
     return $salt . md5_hex($salt . $password);
 };
+
+sub get_by_login {
+    my ($class, $params) = @_;
+
+    return $class->list({ email => $params->{email}, password => $class->password_crypt($params->{password}) });
+}
 
 __PACKAGE__->meta->make_immutable();

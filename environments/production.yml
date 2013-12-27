@@ -21,7 +21,7 @@ plugins:
         database: 'start_olimp'
         host: 'localhost'
         port: 3306
-        username: 'olimp'
+        username: 'start_olimp'
         password: '4235440'
         connection_check_threshold: 10
         dbi_params:

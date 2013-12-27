@@ -18,6 +18,18 @@ get '/register/' => sub {
     return template 'auth', $p;
 };
 
+get '/logout/' => sub {
+    cookie code => '', expires => '0';
+    return redirect '/';
+};
+
+get '/restore/' => sub {
+    return redirect '/' if vars->{loged};
+    return template 'restore';
+};
+
+
+
 post '/register/' => sub {
     my %params = params;
 
@@ -41,26 +53,15 @@ post '/register/' => sub {
     return template 'auth', $p;
 };
 
-get '/logout/' => sub {
-    cookie code => '', expires => '0';
-    return redirect '/';
-};
-
 post '/login/' => sub {
-    if (params->{email} and params->{password}) {
-        my $user = Record::User->list({ email => params->{email}, password => Record::User->password_crypt(params->{password}) });
-        if ($user) {
-            cookie code => $user->regcode, expires => '1 year';
-        }
+    my $user = Record::User->get_by_login(params);
+    if ($user) {
+        cookie code => $user->regcode, expires => '1 year';
     }
     return redirect '/';
 };
 
-get '/restore/' => sub {
-    return redirect '/' if vars->{loged};
-    return template 'restore';
-};
-
+=c
 post '/restore/' => sub {
     if (params->{email}) {
         my $user = Record::User->list({ email => params->{email} });
@@ -78,5 +79,5 @@ post '/restore/' => sub {
 
     return template 'restore';
 };
-
+=cut
 true;

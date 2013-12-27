@@ -1,6 +1,6 @@
 : cascade layouts::main
-: around content -> {
 
+: around content -> {
     <div class="col-md-5">
         <ul class="nav nav-pills">
             <li <: if $role == 'student' { :> class="active" <: } :>><a href="/auth/register?role=student">Учащийся</a></li>
@@ -54,5 +54,4 @@
             </div>
         </form>
     </div>
-
 : }
