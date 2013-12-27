@@ -4,12 +4,13 @@
     <div class="row">
     : if $list {
         <div class="col-md-12">
+            <a href="/admin/content/new/" class="btn btn-primary">Добавить</a>
+
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>ФИО</th>
-                        <th>E-mail</th>
+                        <th>Название</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
@@ -17,9 +18,8 @@
                     : for $list -> $el {
                         <tr>
                             <td><: $~el.count :></td>
-                            <td><: $el.fio :></td>
-                            <td><: $el.email :></td>
-                            <td class="js_edit_item" data-link="/admin/users/<: $el.id :>"></td>
+                            <td><: $el.name :></td>
+                            <td class="js_edit_item" data-link="/admin/content/<: $el.id :>"></td>
                         </tr>
                     : }
                 </tbody>
@@ -28,18 +28,19 @@
     : }
     : else {
         <form class="form-horizontal" method="post" action="" enctype="multipart/form-data">
-            <div class="form-group">
-                <label class="control-label">Время регистрации</label>
-                <div><: $form.registered :></div>
+            <div class="form-group <: if $fail.name { :> has-error <: } :>">
+                <label class="control-label" for="name">Название</label>
+                <div><input type="text" id="name" name="name" value="<: $form.name :>" placeholder="Название" class="form-control"></div>
             </div>
-            <div class="form-group">
-                <label class="control-label">E-mail</label>
-                <div><: $form.email :></div>
+            <div class="form-group <: if $fail.descr { :> has-error <: } :>">
+                <label class="control-label" for="descr">Текст</label>
+                <div><textarea type="text" id="descr" name="descr" placeholder="Текст" class="form-control js_editor"><: $form.descr :></textarea></div>
             </div>
-            <div class="form-group <: if $fail.fio { :> has-error <: } :>">
-                <label class="control-label" for="fio">ФИО</label>
-                <div><input type="text" id="fio" name="fio" value="<: $form.fio :>" placeholder="ФИО" class="form-control"></div>
-            </div>
+
+                <!--button class="btn btn-primary" type="submit" name="action" value="update">Сохранить</button-->
+
+                <button class="btn btn-primary" type="submit" name="action" value="create">Добавить</button>
+            <a href="/admin/content/" class="btn btn-default">Отмена</a>
         </form>
     : }
     </div>

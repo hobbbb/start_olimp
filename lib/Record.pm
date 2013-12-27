@@ -96,7 +96,7 @@ sub clear_params {
             delete $params->{$k};
         }
     }
-    return [ keys %$params ];
+    return keys %$params;
 }
 
 __PACKAGE__->meta->make_immutable();

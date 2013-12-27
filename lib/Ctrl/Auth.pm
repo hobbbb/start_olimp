@@ -54,7 +54,7 @@ post '/register/' => sub {
 };
 
 post '/login/' => sub {
-    my $user = Record::User->get_by_login(params);
+    my $user = Record::User->get_by_login(params());
     if ($user) {
         cookie code => $user->regcode, expires => '1 year';
     }

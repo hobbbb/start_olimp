@@ -11,6 +11,12 @@ $(function(){
         $(this).html('<a onclick="return confirm(\'Вы действительно желаете удалить эту запись?\')" href="' + link + '"><span class="glyphicon glyphicon-trash"></span></a>');
     });
 
+    $('.js_editor').each(function(){
+        var name = $(this).attr('name');
+        CKEDITOR.replace(name, {
+            toolbar : 'MyToolbar'
+        });
+    });
 /*
     $.each($(".icon-trash"), function() { $(this).attr('title', 'Удалить'); });
     $.each($(".icon-pencil"), function() { $(this).attr('title', 'Редактировать'); });
@@ -33,12 +39,6 @@ $(function(){
                 }
             });
         }
-    });
-    $('.js_editor').each(function(){
-        var name = $(this).attr('name');
-        CKEDITOR.replace(name, {
-            toolbar : 'MyToolbar'
-        });
     });
     $('.js_sortable').sortable({
         revert: true,

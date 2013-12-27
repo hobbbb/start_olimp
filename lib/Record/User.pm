@@ -70,8 +70,6 @@ sub set_password {
 }
 =cut
 
-### Class methods
-
 sub add {
     my ($class, %params) = @_;
 
@@ -156,9 +154,8 @@ sub password_crypt {
 };
 
 sub get_by_login {
-    my ($class, $params) = @_;
-
-    return $class->list({ email => $params->{email}, password => $class->password_crypt($params->{password}) });
+    my ($class, %params) = @_;
+    return $class->list({ email => $params{email}, password => $class->password_crypt($params{password}) });
 }
 
 __PACKAGE__->meta->make_immutable();
