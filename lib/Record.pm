@@ -12,7 +12,10 @@ has id => (
     clearer => 'clear_id',
 );
 
-### Class methods
+sub take {
+    my ($class, $id) = @_;
+    return $class->list({ id => $id });
+}
 
 sub list {
     my ($class, $cond) = @_;
@@ -28,11 +31,6 @@ sub list {
     }
 }
 
-sub take {
-    my ($class, $id) = @_;
-    return $class->list({ id => $id });
-}
-
 sub count {
     my ($class, $cond) = @_;
     $cond ||= {};
@@ -40,8 +38,37 @@ sub count {
     return database->quick_count($class->TABLE, $cond);
 }
 
-### Object methods
+sub create {
+    my ($class, %params) = @_;
+    if ($class->can('validate')) {
+        return unless $class->validate(\%params);
+    }
 
+    $class->clear_params(\%params);
+    database->quick_insert($class->TABLE, \%params) or return;
+    $params{id} = database->last_insert_id(undef, undef, undef, undef) or return;
+
+    return $class->new(%params);
+}
+
+sub save {
+    my ($self, %params) = @_;
+    my $class = ref($self);
+    if ($class->can('validate')) {
+        return unless $class->validate(\%params, { skip_empty => 1 });
+    }
+
+    for my $k ($class->clear_params(\%params)) {
+        $self->$k($params{$k});
+    }
+    database->quick_update($class->TABLE, { id => $self->id }, { %$self }) or return;
+
+    return $self;
+}
+
+
+
+# TO DEL
 sub insert {
     my $self = shift;
     $self->clear_id;
@@ -53,6 +80,7 @@ sub insert {
     return $self;
 }
 
+# TO DEL
 sub update {
     my $self = shift;
     confess('no id') unless $self->{id};
@@ -66,10 +94,7 @@ sub update {
 
 sub delete {
     my $self = shift;
-    confess('no id') unless $self->{id};
-
-    database->quick_delete($self->TABLE, { id => $self->{id} }) or return;
-
+    database->quick_delete($self->TABLE, { id => $self->id }) or return;
     return 1;
 }
 

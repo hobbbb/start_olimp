@@ -1,3 +1,17 @@
+function delete_item(a) {
+    var $td = $(a).closest('td'),
+        link = $td.data('link');
+    $.ajax({
+        type: 'DELETE',
+        url: link,
+        success: function(ans) {
+            if (ans == 1) {
+                $td.closest('tr').remove();
+            }
+        }
+    });
+}
+
 $(function(){
     $('.js_edit_item').each(function() {
         var link = $(this).data('link');
@@ -8,7 +22,7 @@ $(function(){
     $('.js_delete_item').each(function() {
         var link = $(this).data('link');
         if (!link) return;
-        $(this).html('<a onclick="return confirm(\'Вы действительно желаете удалить эту запись?\')" href="' + link + '"><span class="glyphicon glyphicon-trash"></span></a>');
+        $(this).html('<a onclick="if (confirm(\'Вы действительно желаете удалить эту запись?\')) delete_item(this)" href="#"><span class="glyphicon glyphicon-trash"></span></a>');
     });
 
     $('.js_editor').each(function(){

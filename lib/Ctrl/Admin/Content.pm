@@ -3,6 +3,7 @@ package Ctrl::Admin::Content;
 use Dancer ':syntax';
 
 use Record::Content;
+use Util;
 
 get '/' => sub {
     my $p = {};
@@ -16,7 +17,7 @@ get '/:id/' => sub {
     if (params->{id} =~ /^\d+$/) {
         my $content = Record::Content->take(params->{id});
         if ($content) {
-            $p->{item} = $content->as_vars;
+            $p->{form} = $content->as_vars;
         }
     }
 
@@ -24,19 +25,24 @@ get '/:id/' => sub {
 };
 
 post '/:id/' => sub {
-    my $p = { params => \%{ params() } };
+    my $p = { form => \%{ params() } };
 
     if (params->{id} =~ /^\d+$/) {
         my $content = Record::Content->take(params->{id});
         if ($content) {
-            return redirect '/admin/content/' if $content->change(params());
+            return redirect '/admin/content/' if $content->save(params());
         }
     }
     else {
-        return redirect '/admin/content/' if Record::Content->add(params());
+        return redirect '/admin/content/' if Record::Content->create(params());
     }
 
     return template 'admin/content', $p;
+};
+
+del '/:id/' => sub {
+    my $content = Record::Content->take(params->{id});
+    $content->delete if $content;
 };
 
 true;

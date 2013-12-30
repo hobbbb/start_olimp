@@ -9,17 +9,17 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Название</th>
+                        <th width="80%">Название</th>
+                        <th>&nbsp;</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
                     : for $list -> $el {
                         <tr>
-                            <td><: $~el.count :></td>
                             <td><: $el.name :></td>
                             <td class="js_edit_item" data-link="/admin/content/<: $el.id :>/"></td>
+                            <td class="js_delete_item" data-link="/admin/content/<: $el.id :>/"></td>
                         </tr>
                     : }
                 </tbody>
@@ -30,11 +30,11 @@
         <form class="form-horizontal" method="post" action="" enctype="multipart/form-data">
             <div class="form-group <: if $fail.name { :> has-error <: } :>">
                 <label class="control-label" for="name">Название</label>
-                <div><input type="text" id="name" name="name" value="<: $params.name :>" placeholder="Название" class="form-control"></div>
+                <div><input type="text" id="name" name="name" value="<: $form.name :>" placeholder="Название" class="form-control"></div>
             </div>
             <div class="form-group <: if $fail.descr { :> has-error <: } :>">
                 <label class="control-label" for="descr">Текст</label>
-                <div><textarea type="text" id="descr" name="descr" placeholder="Текст" class="form-control js_editor"><: $params.descr :></textarea></div>
+                <div><textarea type="text" id="descr" name="descr" placeholder="Текст" class="form-control js_editor"><: $form.descr :></textarea></div>
             </div>
             <button class="btn btn-primary" type="submit">Сохранить</button>
             <a href="/admin/content/" class="btn btn-default">Отмена</a>
