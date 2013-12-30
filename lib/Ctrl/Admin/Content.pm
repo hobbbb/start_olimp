@@ -10,34 +10,33 @@ get '/' => sub {
     return template 'admin/content', $p;
 };
 
-any ['get', 'post'] => '/:id/' => sub {
+get '/:id/' => sub {
     my $p = {};
 
-    my %params = params();
-
-    if (request->method() eq 'POST') {
-        if (params->{id} =~ /^\d+$/) {
+    if (params->{id} =~ /^\d+$/) {
+        my $content = Record::Content->take(params->{id});
+        if ($content) {
+            $p->{item} = $content->as_vars;
         }
-        else {
-            my $content = Record::Content->add(%params);
-            if ($user) {
-                cookie code => $user->regcode, expires => '1 year';
-                return redirect '/';
-            }
-        }
-    }
-    else {
-        # if (params->{id} =~ /^\d+$/) {
-        #     my $content = Record::Content->take(params->{id});
-        #     $p->{item} = $content->as_vars if $content;
-        # }
     }
 
     return template 'admin/content', $p;
 };
 
-post '/' => sub {
-    return template 'admin/content';
+post '/:id/' => sub {
+    my $p = { params => \%{ params() } };
+
+    if (params->{id} =~ /^\d+$/) {
+        my $content = Record::Content->take(params->{id});
+        if ($content) {
+            return redirect '/admin/content/' if $content->change(params());
+        }
+    }
+    else {
+        return redirect '/admin/content/' if Record::Content->add(params());
+    }
+
+    return template 'admin/content', $p;
 };
 
 true;

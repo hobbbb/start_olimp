@@ -48,7 +48,7 @@ sub insert {
 
     my $p = { %$self };
     database->quick_insert($self->TABLE, $p) or return;
-    $self->{id} = database->last_insert_id(undef, undef, undef, undef);
+    $self->{id} = database->last_insert_id(undef, undef, undef, undef) or return;
 
     return $self;
 }

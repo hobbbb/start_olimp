@@ -77,9 +77,8 @@ sub add {
     if ($class->validate(\%params)) {
         $params{password} = $class->password_crypt($params{password});
         $self = $class->new(%params);
-        $self->insert;
+        return $self->insert;
     }
-    return $self;
 }
 
 sub change {
@@ -90,9 +89,8 @@ sub change {
         for my $k ($class->clear_params(\%params)) {
             $self->$k($params{$k});
         }
-        $self->update;
+        return $self->update;
     }
-    return $self;
 }
 
 sub check_auth {

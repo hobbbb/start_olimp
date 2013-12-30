@@ -2,6 +2,7 @@ package Record::Content;
 
 use Mouse;
 
+use Util;
 use Errors;
 
 extends 'Record';
@@ -15,9 +16,8 @@ sub add {
     my $self;
     if ($class->validate(\%params)) {
         $self = $class->new(%params);
-        $self->insert;
+        return $self->insert;
     }
-    return $self;
 }
 
 sub change {
@@ -28,9 +28,8 @@ sub change {
         for my $k ($class->clear_params(\%params)) {
             $self->$k($params{$k});
         }
-        $self->update;
+        return $self->update;
     }
-    return $self;
 }
 
 sub validate {
@@ -39,7 +38,7 @@ sub validate {
 
     unless ($opt->{skip_empty}) {
         for (qw/name descr/) {
-            fail $_ unless $params->{$_} and length($params->{$_}) < 3;
+            fail $_ unless $params->{$_} and length($params->{$_}) > 3;
         }
     }
 
