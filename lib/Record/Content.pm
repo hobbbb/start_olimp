@@ -11,7 +11,8 @@ has name  => (is => 'rw', isa => 'Str', required => 1);
 has descr => (is => 'rw', isa => 'Str', required => 1);
 
 sub validate {
-    my ($class, $params, $opt) = @_;
+    my ($invocant, $params, $opt) = @_;
+    my $class = ref($invocant) || $invocant;
     $opt ||= {};
 
     for (qw/name descr/) {

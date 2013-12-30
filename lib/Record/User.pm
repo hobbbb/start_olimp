@@ -28,7 +28,6 @@ has email => (
 has password => (
     is          => 'rw',
     isa         => 'Str',
-    # writer      => 'set_password',
     required    => 1,
 );
 has sex => (
@@ -59,38 +58,23 @@ has registered => (
 has x_real_ip   => (is => 'ro', isa => 'Any');
 has last_visit  => (is => 'rw', isa => 'Any');
 
-=c
-sub set_password {
-    my $self = shift;
-    w $self;
-    # my @p = @_;
-    # die 'set_password';
-    # w \@p;
-    # return '123';
-}
-=cut
-
-sub add {
+sub create {
     my ($class, %params) = @_;
+    return unless $class->validate(\%params);
 
-    my $self;
-    if ($class->validate(\%params)) {
-        $params{password} = $class->password_crypt($params{password});
-        $self = $class->new(%params);
-        return $self->insert;
-    }
+    $params{password}   = $class->password_crypt($params{password});
+    $params{id}         = $class->_insert(\%params);
+    return $class->new(%params);
 }
 
-sub change {
+sub save {
     my ($self, %params) = @_;
+    return unless $self->validate(\%params, { skip_empty => 1 });
 
-    my $class = ref($self);
-    if ($class->validate(\%params, { skip_empty => 1 })) {
-        for my $k ($class->clear_params(\%params)) {
-            $self->$k($params{$k});
-        }
-        return $self->update;
+    if ($params{password}) {
+        $params{password} = $class->password_crypt($params{password});
     }
+    return $self->_update(\%params);
 }
 
 sub check_auth {
@@ -98,11 +82,12 @@ sub check_auth {
     return unless $regcode;
 
     my $self = $class->list({ regcode => $regcode }) or return;
-    return $self->change(last_visit => Util::now);
+    return $self->save(last_visit => Util::now);
 }
 
 sub validate {
-    my ($class, $params, $opt) = @_;
+    my ($invocant, $params, $opt) = @_;
+    my $class = ref($invocant) || $invocant;
     $opt ||= {};
 
     unless ($opt->{skip_empty}) {

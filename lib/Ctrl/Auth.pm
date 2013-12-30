@@ -36,7 +36,7 @@ post '/register/' => sub {
     if ($params{role} =~ /^student|teacher|parent$/) {
         $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
-        my $user = Record::User->add(%params);
+        my $user = Record::User->create(%params);
         if ($user) {
             cookie code => $user->regcode, expires => '1 year';
             return redirect '/';
@@ -61,23 +61,21 @@ post '/login/' => sub {
     return redirect '/';
 };
 
-=c
 post '/restore/' => sub {
     if (params->{email}) {
         my $user = Record::User->list({ email => params->{email} });
         if ($user) {
             my $new_password = Util::generate(length => 8, light => 1);
-            # send_email(
-            #     to      => $user->{email},
-            #     subject => 'Восстановление пароля',
-            #     body    => $new_password,
-            # );
-            # $user->change(password => Record::User->password_crypt($new_password));
-            $user->change(password => $new_password);
+            send_email(
+                to      => $user->email,
+                subject => 'Восстановление пароля',
+                body    => $new_password,
+            );
+            $user->save(password => $new_password);
         }
     }
 
     return template 'restore';
 };
-=cut
+
 true;

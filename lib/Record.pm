@@ -44,50 +44,35 @@ sub create {
         return unless $class->validate(\%params);
     }
 
+    $params{id} = $class->_insert(\%params);
+    return $class->new(%params);
+}
+
+sub _insert {
+    my ($class, %params) = @_;
+
     $class->clear_params(\%params);
     database->quick_insert($class->TABLE, \%params) or return;
-    $params{id} = database->last_insert_id(undef, undef, undef, undef) or return;
-
-    return $class->new(%params);
+    return database->last_insert_id(undef, undef, undef, undef) or return;
 }
 
 sub save {
     my ($self, %params) = @_;
-    my $class = ref($self);
-    if ($class->can('validate')) {
-        return unless $class->validate(\%params, { skip_empty => 1 });
+    if (ref($self)->can('validate')) {
+        return unless $self->validate(\%params, { skip_empty => 1 });
     }
 
-    for my $k ($class->clear_params(\%params)) {
+    return $self->_update(\%params);
+}
+
+sub _update {
+    my ($self, %params) = @_;
+    return unless $self->{id};
+
+    for my $k ($self->clear_params(\%params)) {
         $self->$k($params{$k});
     }
-    database->quick_update($class->TABLE, { id => $self->id }, { %$self }) or return;
-
-    return $self;
-}
-
-
-
-# TO DEL
-sub insert {
-    my $self = shift;
-    $self->clear_id;
-
-    my $p = { %$self };
-    database->quick_insert($self->TABLE, $p) or return;
-    $self->{id} = database->last_insert_id(undef, undef, undef, undef) or return;
-
-    return $self;
-}
-
-# TO DEL
-sub update {
-    my $self = shift;
-    confess('no id') unless $self->{id};
-
-    my $p = { %$self };
-    my $id = delete $p->{id};
-    database->quick_update($self->TABLE, { id => $id }, $p) or return;
+    database->quick_update($self->TABLE, { id => $self->id }, { %$self }) or return;
 
     return $self;
 }
@@ -114,7 +99,8 @@ sub TABLE {
 }
 
 sub clear_params {
-    my ($class, $params) = @_;
+    my ($invocant, $params) = @_;
+    my $class = ref($invocant) || $invocant;
 
     for my $k (keys %$params) {
         unless (grep(/^$k$/, $class->meta->get_attribute_list)) {
