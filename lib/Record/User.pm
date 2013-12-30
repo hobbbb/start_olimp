@@ -72,7 +72,7 @@ sub save {
     return unless $self->validate(\%params, { skip_empty => 1 });
 
     if ($params{password}) {
-        $params{password} = $class->password_crypt($params{password});
+        $params{password} = $self->password_crypt($params{password});
     }
     return $self->_update(\%params);
 }
@@ -130,7 +130,8 @@ sub validate {
 }
 
 sub password_crypt {
-    my ($class, $password) = @_;
+    my ($invocant, $password) = @_;
+    my $class = ref($invocant) || $invocant;
 
     my $salt = '1b2r9';
     return $salt . md5_hex($salt . $password);
