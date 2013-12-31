@@ -44,7 +44,7 @@ sub create {
         return unless $class->validate(\%params);
     }
 
-    $params{id} = $class->_insert(%params);
+    $params{id} = $class->_insert(%params) or return;
     return $class->new(%params);
 }
 
@@ -71,26 +71,29 @@ sub remove {
 sub _insert {
     my ($class, %params) = @_;
 
-    $class->clear_params(\%params);
-    database->quick_insert($class->TABLE, \%params) or return;
-    return database->last_insert_id(undef, undef, undef, undef) or return;
+    my @p = $class->clear_params(\%params) or return;
+    my $res = database->quick_insert($class->TABLE, \%params);
+
+    return $res eq '0E0' ? undef : database->last_insert_id(undef, undef, undef, undef);
 }
 
 sub _update {
     my ($self, %params) = @_;
     return unless $self->id;
 
-    for my $k ($self->clear_params(\%params)) {
+    my @p = $self->clear_params(\%params) or return;
+    for my $k (@p) {
         $self->$k($params{$k});
     }
-    database->quick_update($self->TABLE, { id => $self->id }, { %$self }) or return;
+    my $res = database->quick_update($self->TABLE, { id => $self->id }, { %$self });
 
-    return $self;
+    return $res eq '0E0' ? undef : $self;
 }
 
 sub _delete {
     my $self = shift;
-    return database->quick_delete($self->TABLE, { id => $self->id });
+    my $res = database->quick_delete($self->TABLE, { id => $self->id });
+    return $res eq '0E0' ? undef : 1;
 }
 
 ### Other methods
