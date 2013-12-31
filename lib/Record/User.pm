@@ -63,7 +63,7 @@ sub create {
     return unless $class->validate(\%params);
 
     $params{password}   = $class->password_crypt($params{password});
-    $params{id}         = $class->_insert(\%params);
+    $params{id}         = $class->_insert(%params);
     return $class->new(%params);
 }
 
@@ -71,10 +71,9 @@ sub save {
     my ($self, %params) = @_;
     return unless $self->validate(\%params, { skip_empty => 1 });
 
-    if ($params{password}) {
-        $params{password} = $self->password_crypt($params{password});
-    }
-    return $self->_update(\%params);
+    $self->password_crypt($params{password});
+
+    return $self->_update(%params);
 }
 
 sub check_auth {
@@ -131,10 +130,17 @@ sub validate {
 
 sub password_crypt {
     my ($invocant, $password) = @_;
-    my $class = ref($invocant) || $invocant;
+    return unless $password;
 
     my $salt = '1b2r9';
-    return $salt . md5_hex($salt . $password);
+    my $crypted_pass = $salt . md5_hex($salt . $password);
+
+    if (ref($invocant)) {
+        $invocant->password($crypted_pass);
+    }
+    else {
+        return $crypted_pass;
+    }
 };
 
 sub get_by_login {

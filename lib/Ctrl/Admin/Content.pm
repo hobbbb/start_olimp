@@ -41,8 +41,7 @@ post '/:id/' => sub {
 };
 
 del '/:id/' => sub {
-    my $content = Record::Content->take(params->{id});
-    $content->delete if $content;
+    Record::Content->remove(params->{id});
 };
 
 true;

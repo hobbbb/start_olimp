@@ -44,8 +44,28 @@ sub create {
         return unless $class->validate(\%params);
     }
 
-    $params{id} = $class->_insert(\%params);
+    $params{id} = $class->_insert(%params);
     return $class->new(%params);
+}
+
+sub save {
+    my ($self, %params) = @_;
+    if (ref($self)->can('validate')) {
+        return unless $self->validate(\%params, { skip_empty => 1 });
+    }
+
+    return $self->_update(%params);
+}
+
+sub remove {
+    my ($invocant, $id) = @_;
+    if (ref($invocant)) {
+        return ref($invocant)->_delete;
+    }
+    elsif ($id) {
+        my $self = $invocant->take($id) or return;
+        return $self->_delete;
+    }
 }
 
 sub _insert {
@@ -56,18 +76,9 @@ sub _insert {
     return database->last_insert_id(undef, undef, undef, undef) or return;
 }
 
-sub save {
-    my ($self, %params) = @_;
-    if (ref($self)->can('validate')) {
-        return unless $self->validate(\%params, { skip_empty => 1 });
-    }
-
-    return $self->_update(\%params);
-}
-
 sub _update {
     my ($self, %params) = @_;
-    return unless $self->{id};
+    return unless $self->id;
 
     for my $k ($self->clear_params(\%params)) {
         $self->$k($params{$k});
@@ -77,10 +88,9 @@ sub _update {
     return $self;
 }
 
-sub delete {
+sub _delete {
     my $self = shift;
-    database->quick_delete($self->TABLE, { id => $self->id }) or return;
-    return 1;
+    return database->quick_delete($self->TABLE, { id => $self->id });
 }
 
 ### Other methods
