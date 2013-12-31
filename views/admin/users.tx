@@ -45,10 +45,35 @@
                 <label class="control-label">E-mail</label>
                 <div><: $form.email :></div>
             </div>
+            <div class="form-group">
+                <label class="control-label">Пол</label>
+                <div>
+                    : if $form.sex == 'm' {
+                        Мужской
+                    : }
+                    : else {
+                        Женский
+                    : }
+                </div>
+            </div>
             <div class="form-group <: if $fail.fio { :> has-error <: } :>">
                 <label class="control-label" for="fio">ФИО</label>
                 <div><input type="text" id="fio" name="fio" value="<: $form.fio :>" placeholder="ФИО" class="form-control"></div>
             </div>
+            : if $form.role == 'student' {
+                <div class="form-group <: if $fail.class_number { :> has-error <: } :>">
+                    <label for="class_number" class="control-label">Класс</label>
+                    <div><input type="number" class="form-control" id="class_number" placeholder="Класс" name="class_number" value="<: $form.class_number :>" min="1" max="11"></div>
+                </div>
+            : }
+            : else if $form.role == 'teacher' {
+                <div class="form-group <: if $fail.school_number { :> has-error <: } :>">
+                    <label for="school_number" class="control-label">Номер школы</label>
+                    <div><input type="text" class="form-control" id="school_number" placeholder="Номер школы" name="school_number" value="<: $form.school_number :>"></div>
+                </div>
+            : }
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+            <a href="/admin/users/" class="btn btn-default">Отмена</a>
         </form>
     : }
     </div>

@@ -1,30 +1,20 @@
 package Ctrl::User::Profile;
 
 use Dancer ':syntax';
-# use Util;
+use Util;
 
-# use Record::User;
+use Record::User;
 
 get '/' => sub {
+    StartOlimp::not_found() unless vars->{loged};
     return template 'profile';
 };
 
 post '/' => sub {
-    return unless vars->{loged};
-    my %params = params;
-=c
-    my $user = Record::User->take(vars->{loged}->{id});
-    if ($user) {
-        $user->change(\%params);
-    }
-    else {
-        my $p = {
-            role => $params{role},
-            form => \%params,
-        };
-        return template 'profile.tpl', $p;
-    }
-=cut
+    my $user = Record::User->check_auth(cookie 'code') or StartOlimp::not_found();
+    $user->save(params());
+    var loged => $user->as_vars;
+    return template 'profile';
 };
 
 true;

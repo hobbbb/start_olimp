@@ -31,4 +31,13 @@ any '/' => sub {
     return template 'index', $p;
 };
 
+get '/404/' => sub {
+    status 'not_found';
+    return template '404.tx';
+};
+
+sub not_found {
+    return redirect '/404/';
+}
+
 true;

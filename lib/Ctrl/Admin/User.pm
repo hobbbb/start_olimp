@@ -1,9 +1,9 @@
 package Ctrl::Admin::User;
 
 use Dancer ':syntax';
-use Util;
 
 use Record::User;
+use Util;
 
 get '/' => sub {
     my $p = {};
@@ -19,6 +19,19 @@ get '/:id/' => sub {
     my $user = Record::User->take(params->{id});
     if ($user) {
         $p->{form} = $user->as_vars;
+    }
+
+    return template 'admin/users', $p;
+};
+
+post '/:id/' => sub {
+    my $p = { form => \%{ params() } };
+
+    if (params->{id} =~ /^\d+$/) {
+        my $user = Record::User->take(params->{id});
+        if ($user) {
+            return redirect '/admin/users/?role=' . $user->role if $user->save(params());
+        }
     }
 
     return template 'admin/users', $p;

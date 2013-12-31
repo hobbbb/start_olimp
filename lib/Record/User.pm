@@ -71,7 +71,8 @@ sub save {
     my ($self, %params) = @_;
     return unless $self->validate(\%params, { skip_empty => 1 });
 
-    $self->password_crypt($params{password});
+    $params{password} = ref($self)->password_crypt($params{password});
+    delete $params{password} unless $params{password};
 
     return $self->_update(%params);
 }
@@ -129,18 +130,11 @@ sub validate {
 }
 
 sub password_crypt {
-    my ($invocant, $password) = @_;
+    my ($class, $password) = @_;
     return unless $password;
 
     my $salt = '1b2r9';
-    my $crypted_pass = $salt . md5_hex($salt . $password);
-
-    if (ref($invocant)) {
-        $invocant->password($crypted_pass);
-    }
-    else {
-        return $crypted_pass;
-    }
+    return $salt . md5_hex($salt . $password);
 };
 
 sub get_by_login {
