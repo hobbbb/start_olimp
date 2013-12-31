@@ -31,7 +31,7 @@ has password => (
     required    => 1,
 );
 has sex => (
-    is          => 'rw',
+    is          => 'ro',
     isa         => enum([qw/m f/]),
     required    => 1,
 );
@@ -64,10 +64,9 @@ sub create {
     # TODO: protect from bots
     # fail 'code' if $params->{code};
 
-    $params{password}   = $class->password_crypt($params{password});
-    $params{id}         = $class->_insert(%params) or return;
+    $params{password} = $class->password_crypt($params{password});
 
-    return $class->new(%params);
+    return $class->_insert(%params);
 }
 
 sub save {

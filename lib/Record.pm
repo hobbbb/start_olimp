@@ -6,11 +6,7 @@ use Dancer ':syntax';
 use Dancer::Plugin::Database;
 use Util;
 
-has id => (
-    is      => 'ro',
-    isa     => 'Int',
-    clearer => 'clear_id',
-);
+has id => (is => 'rw', isa => 'Int');
 
 sub take {
     my ($class, $id) = @_;
@@ -40,8 +36,7 @@ sub count {
 
 sub create {
     my ($class, %params) = @_;
-    $params{id} = $class->_insert(%params) or return;
-    return $class->new(%params);
+    return $class->_insert(%params);
 }
 
 sub save {
@@ -88,9 +83,15 @@ sub _insert {
     if ($class->can('validate')) {
         return unless $class->validate(%params);
     }
-    my $res = database->quick_insert($class->_table, \%params);
 
-    return $res eq '0E0' ? undef : database->last_insert_id(undef, undef, undef, undef);
+    my $self = $class->new(%params);
+    my $res = database->quick_insert($class->_table, { %$self });
+
+    if ($res ne '0E0') {
+        my $id = database->last_insert_id(undef, undef, undef, undef);
+        $self->id($id);
+        return $self;
+    }
 }
 
 sub _update {
