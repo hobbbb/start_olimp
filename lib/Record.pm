@@ -40,20 +40,12 @@ sub count {
 
 sub create {
     my ($class, %params) = @_;
-    if ($class->can('validate')) {
-        return unless $class->validate(\%params);
-    }
-
     $params{id} = $class->_insert(%params) or return;
     return $class->new(%params);
 }
 
 sub save {
     my ($self, %params) = @_;
-    if (ref($self)->can('validate')) {
-        return unless $self->validate(\%params, { skip_empty => 1 });
-    }
-
     return $self->_update(%params);
 }
 
@@ -72,6 +64,9 @@ sub _insert {
     my ($class, %params) = @_;
 
     my @p = $class->clear_params(\%params) or return;
+    if ($class->can('validate')) {
+        return unless $class->validate(%params);
+    }
     my $res = database->quick_insert($class->TABLE, \%params);
 
     return $res eq '0E0' ? undef : database->last_insert_id(undef, undef, undef, undef);
@@ -84,6 +79,9 @@ sub _update {
     my @p = $self->clear_params(\%params) or return;
     for my $k (@p) {
         $self->$k($params{$k});
+    }
+    if ($self->can('validate')) {
+        return unless $self->validate(%params);
     }
     my $res = database->quick_update($self->TABLE, { id => $self->id }, { %$self });
 
@@ -121,6 +119,20 @@ sub clear_params {
         }
     }
     return keys %$params;
+}
+
+sub merge_params {
+    my ($invocant, %params) = @_;
+    my %merge = %params;
+
+    if (ref($invocant)) {
+        %merge = %$invocant;
+        for my $k (keys %params) {
+            $merge{$k} = $params{$k};
+        }
+    }
+
+    return %merge;
 }
 
 __PACKAGE__->meta->make_immutable();

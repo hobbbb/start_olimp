@@ -60,16 +60,18 @@ has last_visit  => (is => 'rw', isa => 'Any');
 
 sub create {
     my ($class, %params) = @_;
-    return unless $class->validate(\%params);
+
+    # TODO: protect from bots
+    # fail 'code' if $params->{code};
 
     $params{password}   = $class->password_crypt($params{password});
-    $params{id}         = $class->_insert(%params);
+    $params{id}         = $class->_insert(%params) or return;
+
     return $class->new(%params);
 }
 
 sub save {
     my ($self, %params) = @_;
-    return unless $self->validate(\%params, { skip_empty => 1 });
 
     $params{password} = ref($self)->password_crypt($params{password});
     delete $params{password} unless $params{password};
@@ -85,61 +87,53 @@ sub check_auth {
     return $self->save(last_visit => Util::now);
 }
 
-sub validate {
-    my ($invocant, $params, $opt) = @_;
-    my $class = ref($invocant) || $invocant;
-    $opt ||= {};
-
-    unless ($opt->{skip_empty}) {
-        for (qw/role fio email password sex/) {
-            fail $_ unless $params->{$_};
-        }
-    }
-
-    if (!$opt->{skip_empty} and !grep(/^$params->{role}$/, qw/student teacher parent/)) {
-        fail 'role';
-    }
-
-    if (!$opt->{skip_empty} and $params->{fio}) {
-        fail 'fio' if length($params->{fio}) < 3;
-    }
-
-    if (!$opt->{skip_empty} and $params->{email}) {
-        fail 'email' if $params->{email} !~ /^.+@.+\.[a-z]{2,4}$/;
-        my @list = $class->list({ email => $params->{email} });
-        if (@list) {
-            fail 'email';
-            fail 'email_exist';
-        }
-    }
-
-    if (!$opt->{skip_empty} and $params->{password}) {
-        fail 'password' if $params->{password} !~ /^.{6,50}$/;
-    }
-
-    if ($params->{role} and $params->{role} eq 'student') {
-        fail 'class_number' if !$params->{class_number} or $params->{class_number} !~ /^\d+$/ or $params->{class_number} < 1 or $params->{class_number} > 11;
-    }
-    if ($params->{role} and $params->{role} eq 'teacher') {
-        fail 'school_number' unless $params->{school_number};
-    }
-
-    # fail 'code' if $params->{code};
-
-    return failed() ? 0 : 1;
+sub get_by_login {
+    my ($class, %params) = @_;
+    my $password = $class->password_crypt($params{password}) or return;
+    return $class->list({ email => $params{email}, password => $password });
 }
 
 sub password_crypt {
     my ($class, $password) = @_;
-    return unless $password;
+    return unless $password and length($password) >= 6;
 
     my $salt = '1b2r9';
     return $salt . md5_hex($salt . $password);
 };
 
-sub get_by_login {
-    my ($class, %params) = @_;
-    return $class->list({ email => $params{email}, password => $class->password_crypt($params{password}) });
+sub validate {
+    my ($invocant, %args) = @_;
+    my $class = ref($invocant) || $invocant;
+    my %params = $invocant->merge_params(%args);
+
+    for (qw/role fio email password sex/) {
+        fail $_ unless $params{$_};
+    }
+
+    unless (grep(/^$params{role}$/, qw/student teacher parent/)) {
+        fail 'role';
+    }
+
+    if ($params{fio}) {
+        fail 'fio' if length($params{fio}) < 3;
+    }
+
+    if ($params{email}) {
+        fail 'email' if $params{email} !~ /^.+@.+\.[a-z]{2,4}$/;
+        if (!$params{id} and $class->list({ email => $params{email} })) {
+            fail 'email';
+            fail 'email_exist';
+        }
+    }
+
+    if ($params{role} and $params{role} eq 'student') {
+        fail 'class_number' if !$params{class_number} or $params{class_number} !~ /^\d+$/ or $params{class_number} < 1 or $params{class_number} > 11;
+    }
+    if ($params{role} and $params{role} eq 'teacher') {
+        fail 'school_number' unless $params{school_number};
+    }
+
+    return failed() ? 0 : 1;
 }
 
 __PACKAGE__->meta->make_immutable();
