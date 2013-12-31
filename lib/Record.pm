@@ -63,7 +63,7 @@ sub remove {
 sub _insert {
     my ($class, %params) = @_;
 
-    my @p = $class->clear_params(\%params) or return;
+    %params = $class->clear_params(%params) or return;
     if ($class->can('validate')) {
         return unless $class->validate(%params);
     }
@@ -76,8 +76,8 @@ sub _update {
     my ($self, %params) = @_;
     return unless $self->id;
 
-    my @p = $self->clear_params(\%params) or return;
-    for my $k (@p) {
+    %params = $class->clear_params(%params) or return;
+    for my $k (keys %params) {
         $self->$k($params{$k});
     }
     if ($self->can('validate')) {
@@ -110,15 +110,15 @@ sub TABLE {
 }
 
 sub clear_params {
-    my ($invocant, $params) = @_;
+    my ($invocant, %params) = @_;
     my $class = ref($invocant) || $invocant;
 
-    for my $k (keys %$params) {
+    for my $k (keys %params) {
         unless (grep(/^$k$/, $class->meta->get_attribute_list)) {
-            delete $params->{$k};
+            delete $params{$k};
         }
     }
-    return keys %$params;
+    return keys %params ? %params : undef;
 }
 
 sub merge_params {
