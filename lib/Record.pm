@@ -27,13 +27,6 @@ sub list {
     }
 }
 
-sub count {
-    my ($class, $cond) = @_;
-    $cond ||= {};
-
-    return database->quick_count($class->_table, $cond);
-}
-
 sub create {
     my ($class, %params) = @_;
     return $class->_insert(%params);
@@ -53,6 +46,18 @@ sub remove {
         my $self = $invocant->take($id) or return;
         return $self->_delete;
     }
+}
+
+sub count {
+    my ($class, $cond) = @_;
+    $cond ||= {};
+
+    return database->quick_count($class->_table, $cond);
+}
+
+sub max {
+    my ($class, $field) = @_;
+    return database->selectrow_array("SELECT max($field) FROM " . $class->_table);
 }
 
 sub as_vars {

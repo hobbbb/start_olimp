@@ -65,6 +65,7 @@ sub create {
     # fail 'code' if $params->{code};
 
     $params{password} = $class->password_crypt($params{password});
+    $params{role} = '' if $params{role} eq 'admin';
 
     return $class->_insert(%params);
 }
@@ -109,7 +110,7 @@ sub validate {
         fail $_ unless $params{$_};
     }
 
-    unless (grep(/^$params{role}$/, qw/student teacher parent/)) {
+    unless (grep(/^$params{role}$/, qw/admin student teacher parent/)) {
         fail 'role';
     }
 

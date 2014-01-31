@@ -2,6 +2,7 @@ package Ctrl::Auth;
 
 use Dancer ':syntax';
 use Util;
+use Errors;
 
 use Record::User;
 
@@ -46,11 +47,10 @@ post '/register/' => sub {
         $params{role} = 'student';
     }
 
-    my $p = {
+    return template 'auth', {
         role => $params{role},
         form => \%params,
     };
-    return template 'auth', $p;
 };
 
 post '/login/' => sub {
@@ -62,20 +62,31 @@ post '/login/' => sub {
 };
 
 post '/restore/' => sub {
-    if (params->{email}) {
-        my $user = Record::User->list({ email => params->{email} });
+    my %params = params;
+
+    my $user;
+    if ($params{email}) {
+        $user = Record::User->list({ email => $params{email} });
         if ($user) {
             my $new_password = Util::generate(length => 8, light => 1);
-            send_email(
-                to      => $user->email,
-                subject => 'Восстановление пароля',
-                body    => $new_password,
-            );
             $user->save(password => $new_password);
+            if ($user) {
+                send_email(
+                    to      => $user->email,
+                    subject => 'Восстановление пароля',
+                    body    => $new_password,
+                );
+            }
+        }
+        else {
+            fail 'restore_no_user';
         }
     }
 
-    return template 'restore';
+    return template 'restore', {
+        user => $user,
+        form => \%params,
+    };
 };
 
 true;

@@ -3,6 +3,9 @@ package Util;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(&w &send_email);
 
+use strict;
+use warnings;
+
 use MIME::Lite;
 use MIME::Base64;
 use Encode qw/encode/;

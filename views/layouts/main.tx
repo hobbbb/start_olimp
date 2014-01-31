@@ -49,6 +49,7 @@
             : }
             : else {
                 <li><a href="/auth/register">Регистрация</a></li>
+                <li><a href="/auth/restore">Восстановление пароля</a></li>
             : }
             </ul>
             : if $LOGED {
