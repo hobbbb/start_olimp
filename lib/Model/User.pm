@@ -1,4 +1,4 @@
-package Record::User;
+package Model::User;
 
 use Mouse;
 use Mouse::Util::TypeConstraints;
@@ -8,7 +8,7 @@ use Digest::MD5 qw(md5_hex);
 use Util;
 use Errors;
 
-extends 'Record';
+extends 'Storage';
 
 has role => (
     is          => 'ro',

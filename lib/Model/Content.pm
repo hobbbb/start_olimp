@@ -1,11 +1,11 @@
-package Record::Content;
+package Model::Content;
 
 use Mouse;
 
 use Util;
 use Errors;
 
-extends 'Record';
+extends 'Storage';
 
 has name  => (is => 'rw', isa => 'Str', required => 1);
 has descr => (is => 'rw', isa => 'Str', required => 1);

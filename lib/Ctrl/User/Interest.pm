@@ -3,18 +3,18 @@ package Ctrl::User::Interest;
 use Dancer ':syntax';
 use Util;
 
-use Record::User;
-use Record::Interest;
+use Model::User;
+use Model::Interest;
 
 get '/' => sub {
     StartOlimp::not_found() unless vars->{loged};
     my $p = {};
-    $p->{list} = [ map { $_->as_vars } Record::Interest->list() ];
+    $p->{list} = [ map { $_->as_vars } Model::Interest->list() ];
     return template 'interest', $p;
 };
 
 post '/' => sub {
-    my $user = Record::User->check_auth(cookie 'code') or StartOlimp::not_found();
+    my $user = Model::User->check_auth(cookie 'code') or StartOlimp::not_found();
     return redirect '/user/interest/';
 };
 

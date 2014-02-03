@@ -1,4 +1,4 @@
-package Record;
+package Storage;
 
 use Mouse;
 
@@ -136,7 +136,7 @@ sub _clear_params {
 sub _table {
     my ($invocant) = @_;
     my $name = ref($invocant) || $invocant;
-    $name =~ s/^Record:://;
+    $name =~ s/^Model:://;
     $name =~ s/::/_/g;
     return $name;
 }
