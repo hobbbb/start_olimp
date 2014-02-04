@@ -12,7 +12,7 @@ load_app 'Ctrl::User';
 hook before => sub {
     my $user = Model::User->check_auth(cookie 'code');
     if ($user) {
-        var loged => $user->as_vars;
+        var loged => $user;
     }
     else {
         cookie code => '', expires => '0';
@@ -22,7 +22,10 @@ hook before => sub {
 hook before_template_render => sub {
     my $tokens = shift;
 
-    $tokens->{LOGED} = delete $tokens->{vars}->{loged};
+    my $user = delete $tokens->{vars}->{loged};
+    if ($user) {
+        $tokens->{LOGED} = $user->as_vars;
+    }
     $tokens->{fail} = delete $tokens->{vars}->{fail};
 };
 

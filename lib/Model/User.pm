@@ -5,6 +5,10 @@ use Mouse::Util::TypeConstraints;
 use MouseX::NativeTraits;
 use Digest::MD5 qw(md5_hex);
 
+# TODO: try to remove Dancer modules
+use Dancer ':syntax';
+use Dancer::Plugin::Database;
+
 use Util;
 use Errors;
 
@@ -134,6 +138,34 @@ sub validate {
     }
 
     return failed() ? 0 : 1;
+}
+
+sub interest_list {
+    my $self = shift;
+
+    my $list = [ database->quick_select('UserInterest', { user_id => $self->id }) ];
+    my @res = ();
+    push @res, $_->{interest_id} for @$list;
+
+    return \@res;
+}
+
+sub interest_save {
+    my ($self, $interest) = @_;
+
+    my @arr;
+    if (ref $interest eq 'ARRAY') {
+        @arr = @$interest;
+    }
+    elsif ($interest =~ /^\d+$/) {
+        push @arr, $interest;
+    }
+    return unless @arr;
+
+    database->quick_delete('UserInterest', { user_id => $self->id });
+    for (@arr) {
+        database->quick_insert('UserInterest', { user_id => $self->id, interest_id => $_ });
+    }
 }
 
 __PACKAGE__->meta->make_immutable();

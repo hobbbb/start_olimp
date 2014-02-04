@@ -6,7 +6,7 @@
         <form class="form-horizontal" role="form" method="post" action="">
             <ul class="list-group">
             : for $list -> $el {
-                <li class="list-group-item"><input type="checkbox" name="interest" value="<: $el.id :>"> <: $el.name :></li>
+                <li class="list-group-item"><input type="checkbox" name="interest" value="<: $el.id :>" <: if $el.checked { :> checked <: } :>> <: $el.name :></li>
             : }
             </ul>
 

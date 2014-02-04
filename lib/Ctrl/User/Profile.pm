@@ -6,14 +6,14 @@ use Util;
 use Model::User;
 
 get '/' => sub {
-    StartOlimp::not_found() unless vars->{loged};
+    my $user = vars->{loged} or StartOlimp::not_found();
     return template 'profile';
 };
 
 post '/' => sub {
-    my $user = Model::User->check_auth(cookie 'code') or StartOlimp::not_found();
+    my $user = vars->{loged} or StartOlimp::not_found();
     $user->save(params());
-    var loged => $user->as_vars;
+    var loged => $user;
     return template 'profile';
 };
 

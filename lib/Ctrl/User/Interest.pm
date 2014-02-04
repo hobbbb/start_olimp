@@ -7,14 +7,14 @@ use Model::User;
 use Model::Interest;
 
 get '/' => sub {
-    StartOlimp::not_found() unless vars->{loged};
-    my $p = {};
-    $p->{list} = [ map { $_->as_vars } Model::Interest->list() ];
-    return template 'interest', $p;
+    my $user = vars->{loged} or StartOlimp::not_found();
+    my $list = Model::Interest->list_by_user_rh($user->interest_list());
+    return template 'interest', { list => $list };
 };
 
 post '/' => sub {
-    my $user = Model::User->check_auth(cookie 'code') or StartOlimp::not_found();
+    my $user = vars->{loged} or StartOlimp::not_found();
+    $user->interest_save(params->{interest});
     return redirect '/user/interest/';
 };
 
