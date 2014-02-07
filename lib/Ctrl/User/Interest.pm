@@ -3,7 +3,6 @@ package Ctrl::User::Interest;
 use Dancer ':syntax';
 use Util;
 
-use Model::User;
 use Model::Interest;
 
 get '/' => sub {

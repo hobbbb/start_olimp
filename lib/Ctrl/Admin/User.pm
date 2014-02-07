@@ -2,21 +2,21 @@ package Ctrl::Admin::User;
 
 use Dancer ':syntax';
 
-use Model::User;
+use User;
 use Util;
 
 get '/' => sub {
     my $p = {};
     $p->{role} = params->{role} || 'student';
 
-    $p->{list} = [ map { $_->as_vars } Model::User->list({ role => $p->{role} }) ];
+    $p->{list} = [ map { $_->as_vars } User->list({ role => $p->{role} }) ];
     return template 'admin/users', $p;
 };
 
 get '/:id/' => sub {
     my $p = {};
 
-    my $user = Model::User->take(params->{id});
+    my $user = User->take(params->{id});
     if ($user) {
         $p->{form} = $user->as_vars;
     }
@@ -28,7 +28,7 @@ post '/:id/' => sub {
     my $p = { form => \%{ params() } };
 
     if (params->{id} =~ /^\d+$/) {
-        my $user = Model::User->take(params->{id});
+        my $user = User->take(params->{id});
         if ($user) {
             return redirect '/admin/users/?role=' . $user->role if $user->save(params());
         }

@@ -3,8 +3,6 @@ package Ctrl::User::Profile;
 use Dancer ':syntax';
 use Util;
 
-use Model::User;
-
 get '/' => sub {
     my $user = vars->{loged} or StartOlimp::not_found();
     return template 'profile';

@@ -1,4 +1,4 @@
-package Model::User;
+package User;
 
 use Mouse;
 use Mouse::Util::TypeConstraints;

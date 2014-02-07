@@ -4,7 +4,7 @@ use Dancer ':syntax';
 use Util;
 use Errors;
 
-use Model::User;
+use User;
 
 get '/' => sub {
     return redirect '/auth/register';
@@ -37,7 +37,7 @@ post '/register/' => sub {
     if ($params{role} =~ /^student|teacher|parent$/) {
         $params{x_real_ip} = request->{env}->{HTTP_X_REAL_IP};
 
-        my $user = Model::User->create(%params);
+        my $user = User->create(%params);
         if ($user) {
             cookie code => $user->regcode, expires => '1 year';
             return redirect '/';
@@ -54,7 +54,7 @@ post '/register/' => sub {
 };
 
 post '/login/' => sub {
-    my $user = Model::User->get_by_login(params());
+    my $user = User->get_by_login(params());
     if ($user) {
         cookie code => $user->regcode, expires => '1 year';
     }
@@ -66,7 +66,7 @@ post '/restore/' => sub {
 
     my $user;
     if ($params{email}) {
-        $user = Model::User->list({ email => $params{email} });
+        $user = User->list({ email => $params{email} });
         if ($user) {
             my $new_password = Util::generate(length => 8, light => 1);
             $user->save(password => $new_password);

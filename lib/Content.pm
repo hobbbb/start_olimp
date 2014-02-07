@@ -1,4 +1,4 @@
-package Model::Content;
+package Content;
 
 use Mouse;
 

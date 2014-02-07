@@ -3,14 +3,14 @@ package StartOlimp;
 use Dancer ':syntax';
 use Util;
 
-use Model::User;
+use User;
 
 load_app 'Ctrl::Admin', prefix => '/admin';
 load_app 'Ctrl::Auth', prefix => '/auth';
 load_app 'Ctrl::User';
 
 hook before => sub {
-    my $user = Model::User->check_auth(cookie 'code');
+    my $user = User->check_auth(cookie 'code');
     if ($user) {
         var loged => $user;
     }
