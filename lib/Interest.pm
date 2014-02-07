@@ -1,4 +1,4 @@
-package Model::Interest;
+package Interest;
 
 use Mouse;
 
