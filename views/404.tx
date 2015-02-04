@@ -1,7 +1,0 @@
-: cascade layouts::main
-
-: around content -> {
-
-    404
-
-: }
