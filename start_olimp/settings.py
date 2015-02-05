@@ -1,5 +1,5 @@
 """
-Django settings for startolimp project.
+Django settings for start_olimp project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'sj9r+@c6a@+6xod%11-5bk^a@4^j7r8xdw@&=6kc(+=sx6uzu3'
+SECRET_KEY = 'i0ou_p1(bciwi!i865-n=hrwo30uq7pvwwc=-sk$7inv&%5^51'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,17 +59,20 @@ WSGI_APPLICATION = 'start_olimp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE':   'django.db.backends.mysql',
+        'NAME':     'startolimp_django',
+        'USER':     'root',
+        'PASSWORD': '',
+        'HOST':     'localhost',
     }
 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
