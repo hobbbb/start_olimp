@@ -1,0 +1,28 @@
+<html>
+	<body>
+	<table align="center" width="100%" style="margin-top: 100px;">
+
+		{% if form.errors %}<tr><p class="error">Неверное имя или пароль</p></tr>{% endif %}
+
+		<tr>
+			<td style="width: 1000px; height: 220px;" align="center">
+				<form method="post" action="/login/">{% csrf_token %}
+				<input type="hidden" name="next" value="/">
+				<table style="width: 300px; height: 150px;">
+					<tr><td style="font-size: 10pt; color: white;">Пожалуйста, авторизуйтесь:</td></tr>
+					<tr>
+						<td><input type="text" style="width: 280px; height: 30px; font-size: 11pt; font-weight: bold;" name="username"></td>
+					</tr>
+					<tr>
+						<td><input type="password" style="width: 280px; height: 30px; font-size: 11pt; font-weight: bold;" name="password"></td>
+					</tr>
+					<tr>
+						<td><input type="submit" style="width: 280px; height: 30px; font-size: 11pt; font-weight: bold;" value="Вход"></td>
+					</tr>
+				</table>
+				</form>
+			</td>
+		</tr>
+	</table>
+	</body>
+</html>
