@@ -87,4 +87,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'users.EmailUser'
+AUTH_USER_MODEL = 'users.MyUser'
