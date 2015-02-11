@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from django.core.mail import send_mail
 from django.utils import timezone
-# from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
@@ -31,8 +31,8 @@ class AbstractMyUser(AbstractBaseUser, PermissionsMixin):
     is_staff        = models.BooleanField(u'Доступ в админку', default=False)
     is_active       = models.BooleanField(u'Активен', default=True)
     date_joined     = models.DateTimeField(u'Дата регистрации', default=timezone.now)
-    fio             = models.TextField(u'ФИО', max_length=255)
-    class_number    = models.TextField(u'Класс', max_length=255)
+    fio             = models.CharField(u'ФИО', max_length=255)
+    class_number    = models.CharField(u'Класс', max_length=255)
 
     objects = MyUserManager()
 
@@ -40,8 +40,8 @@ class AbstractMyUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['fio']
 
     class Meta:
-        verbose_name = u'user'
-        verbose_name_plural = u'users'
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
         abstract = True
 
     def get_full_name(self):
