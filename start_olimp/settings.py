@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap3',
     'core',
     'users',
 )
@@ -84,7 +85,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-STATIC_ROOT = '/Users/hob/www/django/start_olimp/static/'
+# STATIC_ROOT = '/Users/hob/www/django/start_olimp/core/static/'
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.MyUser'
