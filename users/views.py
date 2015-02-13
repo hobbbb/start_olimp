@@ -26,15 +26,14 @@ def login(request):
     if user is not None:
         if user.is_active:
             auth_login(request, user)
-            # TODO: check next param
-            next_page = request.POST['next']
+            next_page = request.POST.get('next', '/')
             return HttpResponseRedirect(next_page)
         else:
             # Return a 'disabled account' error message
             raise Http404()
     else:
-        # Return an 'invalid login' error message.
-        raise Http404()
+        next_page = request.POST.get('next', '/')
+        return HttpResponseRedirect(next_page)
 
 def logout(request):
     auth_logout(request)
